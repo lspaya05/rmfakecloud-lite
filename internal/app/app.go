@@ -14,13 +14,11 @@ import (
 	"github.com/ddvk/rmfakecloud/internal/app/passcodestore"
 	"github.com/ddvk/rmfakecloud/internal/common"
 	"github.com/ddvk/rmfakecloud/internal/config"
-	"github.com/ddvk/rmfakecloud/internal/hwr"
 	"github.com/ddvk/rmfakecloud/internal/mqtt"
 	"github.com/ddvk/rmfakecloud/internal/screenshare"
 	"github.com/ddvk/rmfakecloud/internal/storage"
 
 	"github.com/ddvk/rmfakecloud/internal/storage/fs"
-	"github.com/ddvk/rmfakecloud/internal/ui"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,7 +41,6 @@ type App struct {
 	hub           *hub.Hub
 	passcodeStore passcodestore.Store
 	codeConnector CodeConnector
-	hwrClient     *hwr.HWRClient
 	mqttBroker    *mqtt.Broker
 	roomManager   *screenshare.RoomManager
 }
@@ -169,9 +166,6 @@ func NewApp(cfg *config.Config) App {
 		hub:           ntfHub,
 		passcodeStore: pcStore,
 		codeConnector: codeConnector,
-		hwrClient: &hwr.HWRClient{
-			Cfg: cfg,
-		},
 	}
 
 	roomMgr := screenshare.NewRoomManager()
@@ -179,9 +173,6 @@ func NewApp(cfg *config.Config) App {
 	app.mqttBroker = mqtt.NewBroker(cfg.MQTTPort, nil, app.validateMQTTToken, cfg.ICEServers, roomMgr, ntfHub)
 
 	app.registerRoutes(router)
-
-	uiApp := ui.New(cfg, fsStorage, codeConnector, ntfHub, pcStore, fsStorage, fsStorage, roomMgr, app.mqttBroker)
-	uiApp.RegisterRoutes(router)
 
 	storageapp := fs.NewApp(cfg, fsStorage)
 	storageapp.RegisterRoutes(router)
@@ -207,12 +198,6 @@ func (app *App) validateMQTTToken(token string) (string, error) {
 	if err == nil && claims.Profile.UserID != "" && claims.Version == tokenVersion {
 		userID := common.SanitizeUid(strings.TrimPrefix(claims.Profile.UserID, "auth0|"))
 		return userID, nil
-	}
-
-	webClaims := &ui.WebUserClaims{}
-	err = common.ClaimsFromToken(webClaims, token, app.cfg.JWTSecretKey)
-	if err == nil && webClaims.UserID != "" {
-		return common.SanitizeUid(webClaims.UserID), nil
 	}
 
 	return "", fmt.Errorf("invalid token")

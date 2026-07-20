@@ -6,12 +6,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"image"
-	_ "image/png"
 	"io"
-	"mime/multipart"
 	"net/http"
-	"net/mail"
 	"regexp"
 	"strconv"
 	"strings"
@@ -20,12 +16,9 @@ import (
 	"github.com/ddvk/rmfakecloud/internal/app/hub"
 	"github.com/ddvk/rmfakecloud/internal/common"
 	"github.com/ddvk/rmfakecloud/internal/config"
-	"github.com/ddvk/rmfakecloud/internal/email"
-	"github.com/ddvk/rmfakecloud/internal/hwr"
 	"github.com/ddvk/rmfakecloud/internal/integrations"
 	"github.com/ddvk/rmfakecloud/internal/messages"
 	mqttmod "github.com/ddvk/rmfakecloud/internal/mqtt"
-	"github.com/ddvk/rmfakecloud/internal/storage"
 	"github.com/ddvk/rmfakecloud/internal/storage/fs"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -149,14 +142,6 @@ func (app *App) newUserToken(c *gin.Context) {
 
 	scopes := []string{"intgr", "screenshare", "docedit"}
 
-	if app.cfg.HWRApplicationKey != "" && app.cfg.HWRHmac != "" {
-		scopes = append(scopes, "hwcmail:-1", "hwc")
-	}
-
-	if app.cfg.SMTPConfig != nil {
-		scopes = append(scopes, "mail:-1")
-	}
-
 	if user.Sync15 {
 		log.Info("Using sync 1.5")
 		scopes = append(scopes, syncNew)
@@ -219,299 +204,12 @@ func (app *App) newUserToken(c *gin.Context) {
 	c.String(http.StatusOK, tokenString)
 }
 
-type metapayload struct {
-	FileName string `json:"file_name"`
-}
-
 func userID(c *gin.Context) string {
 	//TODO: suppress the warning
 	//codeql[go/path-injection]
 	return c.GetString(userIDKey)
 }
 
-func extFromContentType(contentType string) (string, error) {
-	switch contentType {
-
-	case "application/epub+zip":
-		return storage.EpubFileExt, nil
-	case "application/pdf":
-		return storage.PdfFileExt, nil
-	}
-	return "", fmt.Errorf("unsupported content type %s", contentType)
-}
-
-func (app *App) uploadDoc(c *gin.Context) {
-	uid := userID(c)
-	deviceID := c.GetString(deviceIDKey)
-	syncVer := getSyncVersion(c)
-
-	log.Info("uploading file for: ", uid)
-
-	form, err := c.MultipartForm()
-	if err != nil {
-		log.Error(err)
-		badReq(c, "not multiform")
-		return
-	}
-
-	meta := form.Value["meta"][0]
-	if meta == "" {
-		log.Warn(handlerLog, " missing 'meta'")
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-
-	m := metapayload{}
-	err = json.Unmarshal([]byte(meta), &m)
-	if err != nil {
-		log.Warn(handlerLog, " meta not json")
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-
-	if len(form.File["file"]) < 1 {
-		log.Warn(handlerLog, " missing 'file'")
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-	file := form.File["file"][0]
-	if file == nil {
-		log.Error(handlerLog, "no files")
-		badReq(c, "mising file")
-		return
-	}
-	contentType := file.Header.Get("Content-Type")
-	ext, err := extFromContentType(contentType)
-	if err != nil {
-		log.Error(handlerLog, err)
-		badReq(c, "unsupported content type")
-		return
-	}
-
-	f, err := file.Open()
-	if err != nil {
-		log.Error(handlerLog, err)
-		badReq(c, "cant open attachment")
-		return
-	}
-	defer f.Close()
-
-	fileName := m.FileName + ext
-	log.Info("Uploading: ", fileName)
-
-	err = saveUpload(app, syncVer, uid, deviceID, fileName, f)
-
-	if err != nil {
-		log.Error(handlerLog, err)
-		internalError(c, "can't upload")
-		return
-	}
-	c.Status(http.StatusOK)
-}
-
-func getSyncVersion(c *gin.Context) common.SyncVersion {
-	syncVer, ok := c.Get(syncVersionKey)
-	if !ok {
-		panic("should have a sync version")
-	}
-	return syncVer.(common.SyncVersion)
-}
-
-// new read on rm api
-func (app *App) uploadDocV2(c *gin.Context) {
-	uid := userID(c)
-	deviceID := c.GetString(deviceIDKey)
-	log.Info("uploading file for: ", uid)
-	syncVer := getSyncVersion(c)
-
-	metaHeader := c.Request.Header["Rm-Meta"]
-	if len(metaHeader) < 1 {
-		log.Warn(handlerLog, "missing 'meta' header")
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-
-	meta := metaHeader[0]
-	if meta == "" {
-		log.Warn(handlerLog, "empty 'meta' header")
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-
-	metaJSON, err := base64.StdEncoding.DecodeString(meta)
-	if err != nil {
-		log.Warn(handlerLog, "meta not base64 encoded ", err)
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-	m := metapayload{}
-	err = json.Unmarshal(metaJSON, &m)
-	if err != nil {
-		log.Warn(handlerLog, "meta not json ", err)
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-
-	contentType := c.Request.Header["Content-Type"]
-	if len(contentType) < 1 {
-		log.Warn(handlerLog, "missing content-type")
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-	ext, err := extFromContentType(contentType[0])
-	if err != nil {
-		log.Error(handlerLog, err)
-		badReq(c, "unsupported content type")
-		return
-	}
-
-	f := c.Request.Body
-
-	fileName := m.FileName + ext
-	log.Info("Uploading: ", fileName)
-
-	err = saveUpload(app, syncVer, uid, deviceID, fileName, f)
-	if err != nil {
-		log.Error(handlerLog, err)
-		internalError(c, "can't upload")
-		return
-	}
-
-	c.Status(http.StatusOK)
-}
-
-func saveUpload(app *App, syncVer common.SyncVersion, uid, deviceID, fileName string, f io.ReadCloser) error {
-	//HACK:
-	if syncVer == common.Sync15 {
-		log.Info("sync 15 upload")
-		_, err := app.blobStorer.CreateBlobDocument(uid, fileName, "", f)
-		if err != nil {
-			return err
-		}
-		app.hub.NotifySync(uid, deviceID)
-	} else {
-		log.Info("sync 10 upload")
-		d, err := app.docStorer.CreateDocument(uid, fileName, "", f)
-		if err != nil {
-			return err
-		}
-		ntf := hub.DocumentNotification{
-			Parent:  "",
-			ID:      d.ID,
-			Type:    d.Type,
-			Name:    d.Name,
-			Version: 1,
-		}
-		app.hub.Notify(uid, deviceID, ntf, messages.DocAddedEvent)
-	}
-	return nil
-}
-
-type emailForm struct {
-	To         string                  `form:"to"`
-	From       string                  `form:"from"`
-	Subject    string                  `form:"subject"`
-	Body       string                  `form:"html"`
-	Attachment []*multipart.FileHeader `form:"attachment"`
-}
-
-func (app *App) sendEmail(c *gin.Context) {
-	uid := userID(c)
-	log.Info("Sending mail for: ", uid)
-
-	if app.cfg.SMTPConfig == nil {
-		log.Error("smtp not configured")
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	var req emailForm
-
-	if err := c.Bind(&req); err != nil {
-		log.Error(err)
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-
-	if log.IsLevelEnabled(log.DebugLevel) {
-		log.Debug("from: ", req.From)
-		log.Debug("to: ", req.To)
-		log.Debug("body: ", req.Body)
-		for i, a := range req.Attachment {
-			log.Debug(" Attachment: ", i)
-			log.Debug(" FileName: ", a.Filename)
-			log.Debug(" FileHeader: ", a.Header)
-			log.Debug(" FileSize: ", a.Size)
-		}
-	}
-
-	var userEmail *mail.Address
-	// try to use the user's email address if in the correct format
-	if user, err := app.userStorer.GetUser(uid); err == nil && user.Email != "" {
-		userEmail, err = mail.ParseAddress(user.Email)
-		if err != nil {
-			log.Warn(handlerLog, "user: ", uid, " has invalid email address: ", user.Email)
-		} else {
-			log.Debug("using user's email from their account")
-		}
-	}
-
-	// fallback FROM the request from the tablet
-	if userEmail == nil {
-		var err error
-		userEmail, err = mail.ParseAddress(req.From)
-		if err != nil {
-			log.Warn(handlerLog, err)
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		log.Debug("using user's email from the request")
-	}
-
-	var from *mail.Address
-	var replyTo *mail.Address
-	if app.cfg.SMTPConfig.FromOverride != nil {
-		from = app.cfg.SMTPConfig.FromOverride
-		replyTo = userEmail
-	} else {
-		from = userEmail
-	}
-
-	//parse TO addresses
-	to, err := mail.ParseAddressList(email.TrimAddresses(req.To))
-	if err != nil {
-		log.Warn(handlerLog, err)
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-
-	emailClient := email.Builder{
-		Subject: req.Subject,
-		To:      to,
-		From:    from,
-		ReplyTo: replyTo,
-		Body:    stripAds(req.Body),
-	}
-
-	for _, file := range req.Attachment {
-		f, err := file.Open()
-		if err != nil {
-			log.Error(handlerLog, err)
-			badReq(c, "cant open attachment")
-			return
-		}
-		defer f.Close()
-
-		emailClient.AddFile(file.Filename, f, file.Header.Get("Content-Type"))
-	}
-	err = emailClient.Send(app.cfg.SMTPConfig)
-	if err != nil {
-		log.Error(handlerLog, err)
-		internalError(c, "cant send email")
-		return
-	}
-	c.Status(http.StatusOK)
-}
 func (app *App) listDocuments(c *gin.Context) {
 
 	uid := userID(c)
@@ -920,88 +618,6 @@ func (app *App) blobStorageWrite(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func (app *App) integrationsGetMetadata(c *gin.Context) {
-	uid := userID(c)
-	integrationID := common.ParamS(integrationKey, c)
-	fileID := common.ParamS(fileKey, c)
-
-	integrationProvider, err := integrations.GetStorageIntegrationProvider(app.userStorer, uid, integrationID)
-	if err != nil {
-		log.Error(fmt.Errorf("can't get integration, %v", err))
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	metadata, err := integrationProvider.GetMetadata(fileID)
-	if err != nil {
-		log.Error(err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	c.JSON(http.StatusOK, metadata)
-}
-
-func (app *App) integrationsSendMessage(c *gin.Context) {
-	uid := userID(c)
-	integrationID := common.ParamS(integrationKey, c)
-
-	// Retrieve provider
-	integrationProvider, err := integrations.GetMessagingIntegrationProvider(app.userStorer, uid, integrationID)
-	if err != nil {
-		log.Error(fmt.Errorf("can't get integration, %v", err))
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	// Parse request body
-	form, err := c.MultipartForm()
-	if err != nil {
-		log.Error(err)
-		badReq(c, "not multiform")
-		return
-	}
-
-	attachment, ok := form.File["attachment"]
-	if !ok || len(attachment) == 0 {
-		badReq(c, "no attachment")
-		return
-	}
-
-	fd, err := attachment[0].Open()
-	if err != nil {
-		log.Error(err)
-		badReq(c, "unable to read attachment")
-		return
-	}
-	defer fd.Close()
-
-	img, _, err := image.Decode(fd)
-	if err != nil {
-		log.Error(err)
-		badReq(c, "unable to decode attachment")
-		return
-	}
-
-	if _, ok := form.Value["data"]; !ok || len(form.Value["data"]) == 0 {
-		badReq(c, "missing data")
-		return
-	}
-
-	var data messages.IntegrationMessageData
-	err = json.Unmarshal([]byte(form.Value["data"][0]), &data)
-
-	// Send the message
-	id, err := integrationProvider.SendMessage(data, img)
-	if err != nil {
-		log.Error(err)
-		internalError(c, "unable to send the message")
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"id": id})
-}
-
 func (app *App) integrationsCalendarEvents(c *gin.Context) {
 	uid := userID(c)
 	integrationID := common.ParamS(integrationKey, c)
@@ -1024,84 +640,6 @@ func (app *App) integrationsCalendarEvents(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (app *App) integrationsUpload(c *gin.Context) {
-	log.Info("uploading...")
-	uid := userID(c)
-	integrationID := common.ParamS(integrationKey, c)
-	folderID := common.ParamS(folderKey, c)
-	name := common.QueryS("name", c)
-	fileType := common.QueryS("fileType", c)
-
-	integrationProvider, err := integrations.GetStorageIntegrationProvider(app.userStorer, uid, integrationID)
-
-	if err != nil {
-		log.Error(fmt.Errorf("can't get integration, %v", err))
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-	body := c.Request.Body
-	id, err := integrationProvider.Upload(folderID, name, fileType, body)
-
-	if err != nil {
-		log.Error(err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"id": id})
-}
-
-func (app *App) integrationsGetFile(c *gin.Context) {
-	uid := userID(c)
-	integrationID := common.ParamS(integrationKey, c)
-	fileID := common.ParamS(fileKey, c)
-
-	integrationProvider, err := integrations.GetStorageIntegrationProvider(app.userStorer, uid, integrationID)
-	if err != nil {
-		log.Error(err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	reader, size, err := integrationProvider.Download(fileID)
-	if err != nil {
-		log.Errorf("cannot download file %s, %v", fileID, err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	defer reader.Close()
-
-	c.DataFromReader(http.StatusOK, size, "application/octet-stream", reader, nil)
-}
-
-func (app *App) integrationsList(c *gin.Context) {
-	uid := userID(c)
-	integrationID := common.ParamS(integrationKey, c)
-	folder := common.ParamS(folderKey, c)
-	folderDepthStr := c.Query("folderDepth")
-	folderDepth := 1
-	if folderDepthStr != "" {
-		folderDepth, _ = strconv.Atoi(folderDepthStr)
-	}
-
-	integrationProvider, err := integrations.GetStorageIntegrationProvider(app.userStorer, uid, integrationID)
-	if err != nil {
-		log.Error(err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	response, err := integrationProvider.List(folder, folderDepth)
-
-	if err != nil {
-		log.Error(err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
-}
 func (app *App) integrations(c *gin.Context) {
 	uid := userID(c)
 
@@ -1174,21 +712,6 @@ func (app *App) uploadRequest(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (app *App) handleHwr(c *gin.Context) {
-	body, err := io.ReadAll(c.Request.Body)
-	if err != nil || len(body) < 1 {
-		log.Warn("no body")
-		badReq(c, "missing bbody")
-		return
-	}
-	response, err := app.hwrClient.SendRequest(body)
-	if err != nil {
-		log.Error(err)
-		internalError(c, "cannot send")
-		return
-	}
-	c.Data(http.StatusOK, hwr.JIIX, response)
-}
 func (app *App) connectWebSocket(c *gin.Context) {
 	uid := userID(c)
 	deviceID := c.GetString(deviceIDKey)
@@ -1358,14 +881,4 @@ func (app *App) nullReport(c *gin.Context) {
 	// 	log.Warn("could not read report data")
 	// }
 	c.Status(http.StatusOK)
-}
-
-// / remove remarkable ads
-func stripAds(msg string) string {
-	br := "<br>--<br>"
-	i := strings.Index(msg, br)
-	if i > 0 {
-		return msg[:i]
-	}
-	return msg
 }

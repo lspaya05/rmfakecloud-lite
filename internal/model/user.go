@@ -63,26 +63,11 @@ type IntegrationConfig struct {
 	Provider string
 	Name     string
 
-	// WebDav // FTP
-	Username string `yaml:"username,omitempty"`
-	Password string `yaml:"password,omitempty"`
-	Address  string `yaml:"address,omitempty"`
-
-	// FTP
-	ActiveTransfers bool `yaml:"activetransfers,omitempty"`
+	// ICS calendar URL
+	Address string `yaml:"address,omitempty"`
 
 	// Insecure ignore TLS cert errors
 	Insecure bool `yaml:"insecure,omitempty"`
-
-	// Dropbox
-	Accesstoken string `yaml:"accesstoken,omitempty"`
-
-	// Localfs
-	// really dangerous as it allows path traversal
-	Path string `yaml:"path,omitempty"`
-
-	// Webhook
-	Endpoint string `yaml:"endpoint,omitempty"`
 }
 
 // GenPassword generates a new random password

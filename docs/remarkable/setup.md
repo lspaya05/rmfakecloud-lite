@@ -138,9 +138,10 @@ After you installed the proxy, you will need to login to your account on your de
 
 1. Click `Menu > General > Account`.
 2. Click on `Setup Account`.
-3. On your main computer:
-    1. Login to the rmfakecloud Web UI (if no proxy used, the same as the `STORAGE_URL` value in the server configuration).
-    2. Press the `Code` link in the menu.
-    3. Press the `Generate Code` button.
+3. On your main computer, generate a one-time pairing code via the [Admin API](../usage/admin-api.md#device-pairing):
+    ```sh
+    curl -H "Authorization: Bearer $RM_ADMIN_API_TOKEN" \
+      http://<your-server>:3000/admin/users/<username>/newcode
+    ```
 4. Enter the shown code on your device.
 5. To check that sync is working correctly. Go to `Menu > Storage` and press `Check Sync`.

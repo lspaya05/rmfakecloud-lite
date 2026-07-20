@@ -17,7 +17,6 @@ import (
 	"github.com/ddvk/rmfakecloud/internal/common"
 	"github.com/ddvk/rmfakecloud/internal/config"
 	"github.com/ddvk/rmfakecloud/internal/storage"
-	"github.com/ddvk/rmfakecloud/internal/storage/exporter"
 	"github.com/ddvk/rmfakecloud/internal/storage/models"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
@@ -67,82 +66,6 @@ func (fs *FileSystemStorage) BlobStorage(uid string) *LocalBlobStorage {
 		fs:  fs,
 		uid: uid,
 	}
-}
-
-// ExportRmDoc exports a document as a zip of all blobs
-func (fs *FileSystemStorage) ExportRmDoc(uid, docid string) (io.ReadCloser, error) {
-	tree, err := fs.GetCachedTree(uid)
-	if err != nil {
-		return nil, err
-	}
-	doc, err := tree.FindDoc(docid)
-	if err != nil {
-		return nil, err
-	}
-	ls := fs.BlobStorage(uid)
-
-	reader, writer := io.Pipe()
-	go func() {
-		zw := zip.NewWriter(writer)
-		var writeErr error
-		for _, entry := range doc.Files {
-			blob, err := ls.GetReader(entry.Hash)
-			if err != nil {
-				writeErr = err
-				break
-			}
-			fw, err := zw.Create(entry.EntryName)
-			if err != nil {
-				blob.Close()
-				writeErr = err
-				break
-			}
-			_, err = io.Copy(fw, blob)
-			blob.Close()
-			if err != nil {
-				writeErr = err
-				break
-			}
-		}
-		if writeErr != nil {
-			log.Error(writeErr)
-			zw.Close()
-			writer.CloseWithError(writeErr)
-			return
-		}
-		zw.Close()
-		writer.Close()
-	}()
-	return reader, nil
-}
-
-// Export exports a document
-func (fs *FileSystemStorage) Export(uid, docid string) (r io.ReadCloser, err error) {
-	tree, err := fs.GetCachedTree(uid)
-	if err != nil {
-		return nil, err
-	}
-	doc, err := tree.FindDoc(docid)
-	if err != nil {
-		return nil, err
-	}
-	ls := fs.BlobStorage(uid)
-
-	archive, err := models.ArchiveFromHashDoc(doc, ls)
-	if err != nil {
-		return nil, err
-	}
-	reader, writer := io.Pipe()
-	go func() {
-		err = exporter.RenderRmapi(archive, writer)
-		if err != nil {
-			log.Error(err)
-			writer.Close()
-			return
-		}
-		writer.Close()
-	}()
-	return reader, err
 }
 
 // UpdateBlobDocument updates metadata

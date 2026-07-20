@@ -17,12 +17,11 @@ General steps:
 * Add apache config below to your apache's `conf.d` directory, or `sites-enabled` directory, depending on your OS
 * Run `apachectl configtest` to make sure your apache config works
 * Run `apachecctl graceful` to restart the webserver
-* Try browsing to `https://rmfakecloud.mydomain.com` and make sure you see the rmfakecloud login page
+* Try browsing to `https://rmfakecloud.mydomain.com` and make sure you get a `Working...` response
 * Add yourself a user: `docker exec rmfakecloud /rmfakecloud-docker setuser -u UserNameHere -a` -- this will print out to the screen a randomly generated password
-* Log in as your username with the password it gave you, you can change it via the web UI later
-* Click 'code' in the top to generate your cloud link code.
+* Generate a cloud link (pairing) code via the [Admin API](../../usage/admin-api.md#device-pairing): `curl -H "Authorization: Bearer $RM_ADMIN_API_TOKEN" https://rmfakecloud.mydomain.com/admin/users/UserNameHere/newcode`
 * On your rM2, go Menu -> Settings -> General -> Account -> Connect
-* Enter your cloud link code from your rmfakecloud web UI
+* Enter that cloud link code on your tablet
 * Documents should now start syncing, you should see stuff scrolling by in your `docker-compose up` window.  Let it go for a while until it finishes.
 * Make sure the cloud icon to the right of the wifi icon in the bottom left of the main "my files" screen on your rM2 tablet doesn't have an X saying the cloud is broken
 * Hit Ctrl-C in your `docker-compose up` window to stop your rmfakecloud, we're done testing
@@ -48,21 +47,14 @@ services:
     volumes:
       - /home/remarkable/rmfakecloud/data:/data
 ```
-  * `network_mode: host` so that the docker container can reach my mail server
 
 env:
 ```
-RMAPI_HWR_APPLICATIONKEY=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
-RMAPI_HWR_HMAC=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
 STORAGE_URL=https://rmfakecloud.mydomain.com
 PORT=3000
 LOGLEVEL=debug
-RM_SMTP_SERVER=127.0.0.1:465
-RM_SMTP_USERNAME=
-RM_SMTP_PASSWORD=
-RM_SMTP_FROM=ReMarkable selfhosted <rmfakecloud@mydomain.com>
 JWT_SECRET_KEY=YouReallyShouldSetThisInConfigAndNotLeaveItThisStaticValueExampl
-RM_SMTP_INSECURE_TLS=true
+RM_ADMIN_API_TOKEN=SetAStrongRandomTokenHere
 ```
 * JWT_SECRET_KEY - set this in config, othrewise every time your server goes up/down
 

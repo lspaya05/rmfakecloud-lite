@@ -1,3 +1,29 @@
+# 0.0.26-lite (headless edition)
+
+First release of the headless "lite" fork. The web UI and several peripheral features are
+removed; administration moves to the CLI and a new JSON admin API. See
+[`CHANGES.md`](CHANGES.md) for the full migration notes.
+
+## Features
+
+- Headless admin JSON API under `/admin`, guarded by the `RM_ADMIN_API_TOKEN` bearer token:
+  device pairing codes, passcode-reset approval, ICS calendar CRUD, and screen-share viewer
+  signaling (curl-driven, no frontend).
+
+## Internal change
+
+- Removed the React web UI (`ui/`) and `internal/ui`; relocated `internal/ui/viewmodel` to
+  `internal/viewmodel`.
+- Removed email/SMTP (`internal/email`), handwriting recognition (`internal/hwr`), the PDF
+  exporter (`internal/storage/exporter`), messaging webhooks, and the browser-extension
+  endpoints.
+- Trimmed integrations to ICS-only (removed Dropbox/WebDAV/FTP/localfs providers); trimmed
+  `IntegrationConfig` accordingly (old `.userprofile` files still parse — unknown keys are
+  ignored).
+- Dropped the corresponding dependencies (`dropbox-sdk-go-unofficial`, `goftp`, `gowebdav`,
+  `unipdf`, `go-remarkable2pdf`, `juruen/rmapi`) and de-UI'd the build system, Docker images,
+  CI workflows, Helm chart, and packaging.
+
 # 0.0.25
 
 ## Features
