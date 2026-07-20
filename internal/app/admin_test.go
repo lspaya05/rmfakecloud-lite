@@ -93,6 +93,22 @@ func TestAdminAuth(t *testing.T) {
 	}
 }
 
+func TestAdminAuthTokenEdgeCases(t *testing.T) {
+	app, router := newAdminTestApp(t)
+	u := registerTestUser(t, app, "edgeuser")
+	path := "/admin/users/" + u.ID + "/newcode"
+
+	for _, tok := range []string{
+		testAdminToken[:len(testAdminToken)-1], // prefix of the real token
+		testAdminToken + "x",                   // real token with trailing garbage
+		"Bearer " + testAdminToken,             // scheme accidentally duplicated in the token
+	} {
+		if w := doReq(t, router, http.MethodGet, path, tok, nil); w.Code != http.StatusUnauthorized {
+			t.Errorf("token %q: expected 401, got %d", tok, w.Code)
+		}
+	}
+}
+
 func TestAdminNewCode(t *testing.T) {
 	app, router := newAdminTestApp(t)
 	u := registerTestUser(t, app, "codeuser")
@@ -229,6 +245,45 @@ func TestAdminIntegrationsCRUD(t *testing.T) {
 	}
 	if len(list) != 0 {
 		t.Fatalf("expected no integrations after delete, got %+v", list)
+	}
+}
+
+func TestAdminIntegrationsRejectNonICS(t *testing.T) {
+	app, router := newAdminTestApp(t)
+	u := registerTestUser(t, app, "nonicsuser")
+	base := "/admin/users/" + u.ID + "/integrations"
+
+	// create with any non-ics provider → 400
+	for _, provider := range []string{"dropbox", "localfs", "webdav", "ftp", ""} {
+		body, _ := json.Marshal(model.IntegrationConfig{
+			Provider: provider,
+			Name:     "nope",
+			Address:  "http://localhost/x",
+		})
+		if w := doReq(t, router, http.MethodPost, base, testAdminToken, body); w.Code != http.StatusBadRequest {
+			t.Errorf("create provider %q: expected 400, got %d (%s)", provider, w.Code, w.Body.String())
+		}
+	}
+
+	// update an existing ics integration to a non-ics provider → 400
+	body, _ := json.Marshal(model.IntegrationConfig{
+		Provider: "ics",
+		Name:     "cal",
+		Address:  "http://localhost/cal.ics",
+	})
+	w := doReq(t, router, http.MethodPost, base, testAdminToken, body)
+	if w.Code != http.StatusOK {
+		t.Fatalf("create ics: expected 200, got %d (%s)", w.Code, w.Body.String())
+	}
+	var created model.IntegrationConfig
+	if err := json.Unmarshal(w.Body.Bytes(), &created); err != nil {
+		t.Fatalf("decode created: %v", err)
+	}
+
+	created.Provider = "dropbox"
+	body, _ = json.Marshal(created)
+	if w := doReq(t, router, http.MethodPut, base+"/"+created.ID, testAdminToken, body); w.Code != http.StatusBadRequest {
+		t.Errorf("update to dropbox: expected 400, got %d (%s)", w.Code, w.Body.String())
 	}
 }
 
