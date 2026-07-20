@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
 )
 
 // NotificationType type of the notifiction

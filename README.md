@@ -6,7 +6,7 @@ the hosting environment. This "lite" edition drops the web UI and several periph
 features to keep the service small and easy to operate; everything an administrator needs
 is exposed through a CLI and a headless JSON API driven with `curl`.
 
-See the [project documentation](https://ddvk.github.io/rmfakecloud/) for setup and configuration.
+See the [project documentation](https://lspaya05.github.io/rmfakecloud-lite/) for setup and configuration.
 
 ## Supported Devices
 
@@ -20,7 +20,7 @@ See the [project documentation](https://ddvk.github.io/rmfakecloud/) for setup a
 
 The current release of rmfakecloud supports file synchronization up to **reMarkable software 3.27.1**. Newer releases have not been tested yet.
 
-See the [documentation](https://ddvk.github.io/rmfakecloud/remarkable/setup/) for how to setup your device to use rmfakecloud.
+See the [documentation](https://lspaya05.github.io/rmfakecloud-lite/remarkable/setup/) for how to setup your device to use rmfakecloud.
 
 
 ## Features
@@ -31,12 +31,12 @@ admin capabilities. Features that are not core to headless sync have been remove
 | Feature | Status | Notes |
 | ------- | ------ | ----- |
 | File synchronization (1.0) | ✅ |  |
-| File synchronization (1.5, 2, 3, 4) | ✅ | [diff sync](https://ddvk.github.io/rmfakecloud/usage/diff-sync/) |
-| Device registration / pairing | ✅ | all reMarkable devices; pairing code via the [admin API](https://ddvk.github.io/rmfakecloud/usage/admin-api/) |
-| [Screen sharing](https://ddvk.github.io/rmfakecloud/install/configuration/#screen-sharing) | ✅ | viewer signaling relayed through the admin API |
-| [Calendar integration (ICS)](https://ddvk.github.io/rmfakecloud/usage/calendar/) | ✅ | subscribe to an `.ics` URL |
-| [Passcode (PIN) reset](https://ddvk.github.io/rmfakecloud/usage/passcode-reset/) | ✅ | reMarkable 1 / reMarkable 2 only; approved via the admin API |
-| Web UI | ❌ | removed in the lite edition — use the CLI + [admin API](https://ddvk.github.io/rmfakecloud/usage/admin-api/) |
+| File synchronization (1.5, 2, 3, 4) | ✅ | [diff sync](https://lspaya05.github.io/rmfakecloud-lite/usage/diff-sync/) |
+| Device registration / pairing | ✅ | all reMarkable devices; pairing code via the [admin API](https://lspaya05.github.io/rmfakecloud-lite/usage/admin-api/) |
+| [Screen sharing](https://lspaya05.github.io/rmfakecloud-lite/install/configuration/#screen-sharing) | ✅ | viewer signaling relayed through the admin API |
+| [Calendar integration (ICS)](https://lspaya05.github.io/rmfakecloud-lite/usage/calendar/) | ✅ | subscribe to an `.ics` URL |
+| [Passcode (PIN) reset](https://lspaya05.github.io/rmfakecloud-lite/usage/passcode-reset/) | ✅ | reMarkable 1 / reMarkable 2 only; approved via the admin API |
+| Web UI | ❌ | removed in the lite edition — use the CLI + [admin API](https://lspaya05.github.io/rmfakecloud-lite/usage/admin-api/) |
 | Send document by email / SMTP | ❌ | removed |
 | Handwriting recognition | ❌ | removed |
 | Storage integrations (Dropbox / WebDAV / FTP / local) | ❌ | removed |

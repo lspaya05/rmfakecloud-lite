@@ -8,13 +8,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/app/hub"
-	"github.com/ddvk/rmfakecloud/internal/app/passcodestore"
-	"github.com/ddvk/rmfakecloud/internal/config"
-	"github.com/ddvk/rmfakecloud/internal/messages"
-	"github.com/ddvk/rmfakecloud/internal/model"
-	"github.com/ddvk/rmfakecloud/internal/screenshare"
-	"github.com/ddvk/rmfakecloud/internal/storage/fs"
+	"github.com/lspaya05/rmfakecloud-lite/internal/app/hub"
+	"github.com/lspaya05/rmfakecloud-lite/internal/app/passcodestore"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
+	"github.com/lspaya05/rmfakecloud-lite/internal/messages"
+	"github.com/lspaya05/rmfakecloud-lite/internal/model"
+	"github.com/lspaya05/rmfakecloud-lite/internal/screenshare"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/fs"
 	"github.com/gin-gonic/gin"
 )
 
@@ -284,6 +284,77 @@ func TestAdminIntegrationsRejectNonICS(t *testing.T) {
 	body, _ = json.Marshal(created)
 	if w := doReq(t, router, http.MethodPut, base+"/"+created.ID, testAdminToken, body); w.Code != http.StatusBadRequest {
 		t.Errorf("update to dropbox: expected 400, got %d (%s)", w.Code, w.Body.String())
+	}
+}
+
+func TestAdminScreenshareViewerFlow(t *testing.T) {
+	app, router := newAdminTestApp(t)
+	u := registerTestUser(t, app, "ssuser")
+	base := "/admin/users/" + u.ID + "/screenshare"
+
+	// no active room yet
+	if w := doReq(t, router, http.MethodGet, base+"/room", testAdminToken, nil); w.Code != http.StatusNotFound {
+		t.Fatalf("join with no room: expected 404, got %d", w.Code)
+	}
+
+	room := app.roomManager.CreateRoom(u.ID, "tablet-1")
+
+	// join active room
+	w := doReq(t, router, http.MethodGet, base+"/room", testAdminToken, nil)
+	if w.Code != http.StatusOK {
+		t.Fatalf("join: expected 200, got %d (%s)", w.Code, w.Body.String())
+	}
+	var joined struct {
+		RoomID  string                   `json:"roomId"`
+		Clients []screenshare.RoomClient `json:"clients"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &joined); err != nil {
+		t.Fatalf("decode join: %v", err)
+	}
+	if joined.RoomID != room.RoomID {
+		t.Errorf("expected room %q, got %q", room.RoomID, joined.RoomID)
+	}
+	if len(joined.Clients) != 1 || !joined.Clients[0].IsOwner || joined.Clients[0].ClientID != "tablet-1" {
+		t.Errorf("expected single owner client tablet-1, got %+v", joined.Clients)
+	}
+
+	// get room by id / unknown id
+	if w := doReq(t, router, http.MethodGet, base+"/room/"+room.RoomID, testAdminToken, nil); w.Code != http.StatusOK {
+		t.Errorf("get room: expected 200, got %d", w.Code)
+	}
+	if w := doReq(t, router, http.MethodGet, base+"/room/does-not-exist", testAdminToken, nil); w.Code != http.StatusNotFound {
+		t.Errorf("get unknown room: expected 404, got %d", w.Code)
+	}
+
+	// send answer → 202 and message recorded for the target client
+	answer, _ := json.Marshal(map[string]interface{}{
+		"payload":        map[string]string{"type": "answer", "sdp": "v=0"},
+		"targetClientId": "tablet-1",
+	})
+	if w := doReq(t, router, http.MethodPost, base+"/room/"+room.RoomID+"/answer?clientId=viewer-1", testAdminToken, answer); w.Code != http.StatusAccepted {
+		t.Fatalf("answer: expected 202, got %d (%s)", w.Code, w.Body.String())
+	}
+	msgs := app.roomManager.GetMessages(room.RoomID, 0)
+	if len(msgs) != 1 || msgs[0].SenderClientID != "viewer-1" || msgs[0].TargetClientID != "tablet-1" {
+		t.Errorf("expected one direct message viewer-1→tablet-1, got %+v", msgs)
+	}
+
+	// answer to unknown room → 404
+	if w := doReq(t, router, http.MethodPost, base+"/room/does-not-exist/answer", testAdminToken, answer); w.Code != http.StatusNotFound {
+		t.Errorf("answer unknown room: expected 404, got %d", w.Code)
+	}
+
+	// answer with malformed body → 400
+	if w := doReq(t, router, http.MethodPost, base+"/room/"+room.RoomID+"/answer", testAdminToken, []byte("{not json")); w.Code != http.StatusBadRequest {
+		t.Errorf("answer bad body: expected 400, got %d", w.Code)
+	}
+
+	// delete → 204 and no active room remains
+	if w := doReq(t, router, http.MethodDelete, base+"/room/"+room.RoomID, testAdminToken, nil); w.Code != http.StatusNoContent {
+		t.Errorf("delete room: expected 204, got %d", w.Code)
+	}
+	if got := app.roomManager.FindActiveRoom(u.ID); got != "" {
+		t.Errorf("expected no active room after delete, got %q", got)
 	}
 }
 

@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
 	log "github.com/sirupsen/logrus"
 )
 

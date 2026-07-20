@@ -21,5 +21,5 @@ Administration is done through:
 
 This lite edition removes the web UI, email/SMTP, handwriting recognition, storage
 integrations (Dropbox/WebDAV/FTP/local), messaging webhooks, and PDF export from upstream
-rmfakecloud. See [`CHANGES.md`](https://github.com/ddvk/rmfakecloud/blob/master/CHANGES.md)
+rmfakecloud. See [`CHANGES.md`](https://github.com/lspaya05/rmfakecloud-lite/blob/master/CHANGES.md)
 for details.

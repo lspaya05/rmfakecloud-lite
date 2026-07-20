@@ -1,4 +1,4 @@
-module github.com/ddvk/rmfakecloud
+module github.com/lspaya05/rmfakecloud-lite
 
 go 1.23.3
 

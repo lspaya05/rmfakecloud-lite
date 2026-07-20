@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/messages"
+	"github.com/lspaya05/rmfakecloud-lite/internal/messages"
 )
 
 // ResetTTL is how long a pending reset request stays valid.

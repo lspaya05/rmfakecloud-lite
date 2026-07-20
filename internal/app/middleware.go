@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )

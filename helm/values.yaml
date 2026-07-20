@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: ddvk/rmfakecloud
+  repository: ghcr.io/lspaya05/rmfakecloud-lite
   pullPolicy: Always
   tag: "latest"
 

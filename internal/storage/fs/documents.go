@@ -12,9 +12,9 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
-	"github.com/ddvk/rmfakecloud/internal/config"
-	"github.com/ddvk/rmfakecloud/internal/storage"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage"
 )
 
 // DefaultTrashDir name of the trash dir

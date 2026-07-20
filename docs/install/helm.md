@@ -3,7 +3,7 @@
 
 You will need to clone the repo : 
 ```sh
-git clone https://github.com/ddvk/rmfakecloud && cd rmfakecloud/helm
+git clone https://github.com/lspaya05/rmfakecloud-lite && cd rmfakecloud-lite/helm
 
 Modify your variables just like a simple docker-compose
 ```sh
@@ -20,13 +20,13 @@ helm install myrmfakecloud .
 Create your first user using kubectl exec:
 ```sh
 export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "rmfakecloud.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME -- /rmfakecloud-docker setuser -u ddvk -a
+kubectl exec $POD_NAME -- /rmfakecloud-docker setuser -u myuser -a
 ```
 (You may need to restart the pod)
 
 You can reset a password with : 
 ```sh
 export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "rmfakecloud.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME -- /rmfakecloud-docker setuser -u ddvk -p "${NEWPASSWD}"
+kubectl exec $POD_NAME -- /rmfakecloud-docker setuser -u myuser -p "${NEWPASSWD}"
 ```
 

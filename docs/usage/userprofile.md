@@ -59,16 +59,16 @@ This commands lists existing users.
 
 This commands edit or create account.
 
-To create/update an admin account `ddvk`:
+To create/update an admin account `myuser`:
 
 ```sh
-rmfakecloud setuser -u ddvk -a
+rmfakecloud setuser -u myuser -a
 ```
 
 To reset a password:
 
 ```sh
-read -s -p "New password: " NEWPASSWD && rmfakecloud setuser -u ddvk -p "${NEWPASSWD}"
+read -s -p "New password: " NEWPASSWD && rmfakecloud setuser -u myuser -p "${NEWPASSWD}"
 ```
 
 
