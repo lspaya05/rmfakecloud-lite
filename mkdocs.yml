@@ -1,9 +1,9 @@
-site_name: rmfakecloud
-site_url: https://ddvk.github.io/rmfakecloud
-site_description: Self hosted reMarkable sync cloud
+site_name: rmfakecloud-lite
+site_url: https://lspaya05.github.io/rmfakecloud-lite
+site_description: Self hosted headless reMarkable sync cloud
 site_author: ddvk
 
-repo_url: https://github.com/ddvk/rmfakecloud
+repo_url: https://github.com/lspaya05/rmfakecloud-lite
 edit_uri: ""
 
 theme:

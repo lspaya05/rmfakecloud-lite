@@ -25,6 +25,9 @@ jobs:
     - name: Build
       run: make build
 
+    - name: Vet
+      run: go vet ./...
+
     - name: TestGO
       run: make testgo
 
