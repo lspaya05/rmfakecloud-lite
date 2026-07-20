@@ -4,8 +4,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
-	"github.com/ddvk/rmfakecloud/internal/storage/models"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/models"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ddvk/rmfakecloud/internal/config"
-	"github.com/ddvk/rmfakecloud/internal/storage"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage"
 )
 
 func TestCreateDocument(t *testing.T) {

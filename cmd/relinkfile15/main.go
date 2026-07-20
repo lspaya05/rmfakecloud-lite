@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ddvk/rmfakecloud/internal/config"
-	"github.com/ddvk/rmfakecloud/internal/storage/fs"
-	"github.com/ddvk/rmfakecloud/internal/storage/models"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/fs"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/models"
 )
 
 func main() {

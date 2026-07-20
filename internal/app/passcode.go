@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/app/passcodestore"
-	"github.com/ddvk/rmfakecloud/internal/messages"
+	"github.com/lspaya05/rmfakecloud-lite/internal/app/passcodestore"
+	"github.com/lspaya05/rmfakecloud-lite/internal/messages"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )

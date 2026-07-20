@@ -9,9 +9,9 @@ import (
 	"syscall"
 	_ "time/tzdata"
 
-	"github.com/ddvk/rmfakecloud/internal/app"
-	"github.com/ddvk/rmfakecloud/internal/cli"
-	"github.com/ddvk/rmfakecloud/internal/config"
+	"github.com/lspaya05/rmfakecloud-lite/internal/app"
+	"github.com/lspaya05/rmfakecloud-lite/internal/cli"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
 	"github.com/gin-gonic/gin"
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"

@@ -9,7 +9,7 @@ conflicts.
 In order to use this feature, you'll need to update your user to activate it:
 
 ```sh
-rmfakecloud setuser -u ddvk -a -s
+rmfakecloud setuser -u myuser -a -s
 ```
 
 The `-a` is to let/set the user admin: as the tool will remove the admin
@@ -48,20 +48,20 @@ This utility takes as argument a path to a `.root.history` file. It'll create an
 `history` directory, which will contain the git repository.
 
 ```
-./history2git15 /var/lib/rmfakecloud/users/ddvk/sync/.root.history
+./history2git15 /var/lib/rmfakecloud/users/myuser/sync/.root.history
 ```
 
 As it can takes a large amount of time, you can limit to the latest
 modifications with the `-tail` option:
 
 ```
-./history2git15 -tail 20 /var/lib/rmfakecloud/users/ddvk/sync/.root.history
+./history2git15 -tail 20 /var/lib/rmfakecloud/users/myuser/sync/.root.history
 ```
 
 In this example only the last 20 modifications of the tree will be saved as a
 git repository.
 
-After a successfull run, go to `/var/lib/rmfakecloud/users/ddvk/sync/history`
+After a successfull run, go to `/var/lib/rmfakecloud/users/myuser/sync/history`
 and use `git` to explore the differences referenced in the two files:
 
 - **`doctree`:** this is a human readable hiereachy of the directories and
@@ -80,7 +80,7 @@ and use `git` to explore the differences referenced in the two files:
 This utility can relink in the root tree a non-deleted file.
 
 ```
-DATA_DIR=/var/lib/rmfakecloud ./relink15 -user ddvk -root-hash 1c0ee6fb7fde7d09dd25b954dd9f23f950d9e25f1fbc661ca18aebf40bb14a00 "Notebook 42" "My calendar.pdf"
+DATA_DIR=/var/lib/rmfakecloud ./relink15 -user myuser -root-hash 1c0ee6fb7fde7d09dd25b954dd9f23f950d9e25f1fbc661ca18aebf40bb14a00 "Notebook 42" "My calendar.pdf"
 ```
 
 `DATA_DIR` is the same option used by `rmfakecloud`. If you don't use it with

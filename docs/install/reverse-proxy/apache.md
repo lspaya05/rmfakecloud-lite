@@ -1,6 +1,6 @@
 From discord/xabean#2732 | github.com/warewolf
 
-client: rM2, Toltec, rmfakecloud installed via opkg. Follow the device installation instructions here: https://ddvk.github.io/rmfakecloud/remarkable/setup/
+client: rM2, Toltec, rmfakecloud installed via opkg. Follow the device installation instructions here: https://lspaya05.github.io/rmfakecloud-lite/remarkable/setup/
 server: rmfakecloud docker image, docker-compose.yml + env
 
 # How I setup rmfakecloud for myself
@@ -37,7 +37,7 @@ version: "3.4"
 services:
   rmfakecloud:
     network_mode: host
-    image: ddvk/rmfakecloud
+    image: ghcr.io/lspaya05/rmfakecloud-lite
     container_name: rmfakecloud
     restart: unless-stopped
     ports: 

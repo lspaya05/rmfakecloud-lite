@@ -9,7 +9,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/ddvk/rmfakecloud/internal/screenshare"
+	"github.com/lspaya05/rmfakecloud-lite/internal/screenshare"
 
 	"github.com/gorilla/websocket"
 	mqtt "github.com/mochi-mqtt/server/v2"

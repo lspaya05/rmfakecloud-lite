@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/messages"
+	"github.com/lspaya05/rmfakecloud-lite/internal/messages"
 )
 
 func newReq(id string, ttl time.Duration) messages.PasscodeReset {

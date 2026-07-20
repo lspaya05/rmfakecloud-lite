@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ddvk/rmfakecloud/internal/storage"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage"
 )
 
 // NewHashEntry blah

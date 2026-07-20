@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
-	"github.com/ddvk/rmfakecloud/internal/integrations"
-	"github.com/ddvk/rmfakecloud/internal/model"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/integrations"
+	"github.com/lspaya05/rmfakecloud-lite/internal/model"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"

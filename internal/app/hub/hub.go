@@ -9,8 +9,8 @@ import (
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
-	"github.com/ddvk/rmfakecloud/internal/messages"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/messages"
 	"github.com/gorilla/websocket"
 )
 

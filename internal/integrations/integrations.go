@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/messages"
-	"github.com/ddvk/rmfakecloud/internal/storage"
+	"github.com/lspaya05/rmfakecloud-lite/internal/messages"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage"
 )
 
 const (
