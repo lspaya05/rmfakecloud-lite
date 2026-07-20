@@ -200,7 +200,7 @@ type IntegrationsResponse struct {
 	Integrations []Integration `json:"integrations"`
 }
 
-// Integration integrations (google,dropbox)
+// Integration a user integration (ics calendar)
 type Integration struct {
 	Added        time.Time `json:"added"`
 	ID           string    `json:"id"`

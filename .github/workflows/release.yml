@@ -20,13 +20,7 @@ jobs:
           go-version: ^1.23
         id: go
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 9
-          run_install: false
-
-      - name: Build 
+      - name: Build
         run: make all
 
       - name: Release

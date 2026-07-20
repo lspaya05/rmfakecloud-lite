@@ -6,13 +6,11 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"net/mail"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
 
-	"github.com/ddvk/rmfakecloud/internal/email"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/pbkdf2"
 )
@@ -49,30 +47,9 @@ const (
 	envJWTSecretKey     = "JWT_SECRET_KEY"
 	envRegistrationOpen = "OPEN_REGISTRATION"
 
-	// envSMTPServer the mail server
-	envSMTPServer = "RM_SMTP_SERVER"
-	// envSMTPUsername the username for the mail server
-	envSMTPUsername = "RM_SMTP_USERNAME"
-	// envSMTPPassword pass
-	envSMTPPassword = "RM_SMTP_PASSWORD"
-	// envSMTPHelo custom helo
-	envSMTPHelo = "RM_SMTP_HELO"
-	// no tls, for local smtp mocking etc
-	envSMTPNoTLS = "RM_SMTP_NOTLS"
-	// use starttls when notls was used
-	envSMTPStartTLS = "RM_SMTP_STARTTLS"
-	// envSMTPInsecureTLS dont check cert (bad)
-	envSMTPInsecureTLS = "RM_SMTP_INSECURE_TLS"
-	// envSMTPFrom custom from address
-	envSMTPFrom = "RM_SMTP_FROM"
+	// envAdminAPIToken static bearer token for the headless admin API
+	envAdminAPIToken = "RM_ADMIN_API_TOKEN"
 
-	// envHwrApplicationKey the myScript application key
-	envHwrApplicationKey = "RMAPI_HWR_APPLICATIONKEY"
-	// envHwrHmac myScript hmac key
-	envHwrHmac = "RMAPI_HWR_HMAC"
-	// envHwrLangOverride override the language specified in myScript requests
-	envHwrLangOverride = "RMAPI_HWR_LANG_OVERRIDE"
-	envHwrHost         = "RMAPI_HWR_HOST"
 	// EnvLogFile log file to use
 	EnvLogFile     = "RM_LOGFILE"
 	envHTTPSCookie = "RM_HTTPS_COOKIE"
@@ -85,22 +62,18 @@ const (
 
 // Config config
 type Config struct {
-	Port              string
-	StorageURL        string
+	Port       string
+	StorageURL string
 	//only https
 	CloudHost         string
 	DataDir           string
 	RegistrationOpen  bool
 	CreateFirstUser   bool
+	AdminAPIToken     string
 	JWTSecretKey      []byte
 	JWTRandom         bool
 	Certificate       tls.Certificate
-	SMTPConfig        *email.SMTPConfig
 	LogFile           string
-	HWRApplicationKey string
-	HWRHmac           string
-	HWRLangOverride   string
-	HWRHost           string
 	HTTPSCookie       bool
 	TrustProxy        bool
 	MQTTPort          string
@@ -118,17 +91,6 @@ func (cfg *Config) Verify() {
 
 	if !cfg.HTTPSCookie {
 		log.Warnln(envHTTPSCookie + " is not set, use only when not using https!")
-	}
-
-	if cfg.SMTPConfig == nil {
-		log.Warnln("smtp not configured, no emails will be sent")
-	}
-
-	if cfg.HWRApplicationKey == "" {
-		log.Info("if you want HWR, provide the myScript applicationKey in: " + envHwrApplicationKey)
-	}
-	if cfg.HWRHmac == "" {
-		log.Info("provide the myScript hmac in: " + envHwrHmac)
 	}
 
 	if cfg.Certificate.Certificate == nil {
@@ -207,34 +169,6 @@ func FromEnv() *Config {
 		cloudHost = u.Host
 	}
 
-	// smtp
-	var smtpCfg *email.SMTPConfig
-	servername := os.Getenv(envSMTPServer)
-
-	if servername != "" {
-		inSecureTLS, _ := strconv.ParseBool(os.Getenv(envSMTPInsecureTLS))
-		noTLS, _ := strconv.ParseBool(os.Getenv(envSMTPNoTLS))
-		startTLS, _ := strconv.ParseBool(os.Getenv(envSMTPStartTLS))
-		smtpCfg = &email.SMTPConfig{
-			Server:      servername,
-			Username:    os.Getenv(envSMTPUsername),
-			Password:    os.Getenv(envSMTPPassword),
-			Helo:        os.Getenv(envSMTPHelo),
-			NoTLS:       noTLS,
-			StartTLS:    startTLS,
-			InsecureTLS: inSecureTLS,
-		}
-		fromOverride := os.Getenv(envSMTPFrom)
-		if fromOverride != "" {
-			fromAddress, err := mail.ParseAddress(os.Getenv(envSMTPFrom))
-			if err != nil {
-				log.Warn(envSMTPFrom, " can't parse address: ", fromAddress, err)
-			} else {
-				smtpCfg.FromOverride = fromAddress
-			}
-		}
-	}
-
 	trustProxy, _ := strconv.ParseBool(os.Getenv(envTrustProxy))
 
 	mqttPort := os.Getenv(envMQTTPort)
@@ -274,11 +208,7 @@ func FromEnv() *Config {
 		JWTRandom:         jwtGenerated,
 		Certificate:       cert,
 		RegistrationOpen:  openRegistration,
-		SMTPConfig:        smtpCfg,
-		HWRApplicationKey: os.Getenv(envHwrApplicationKey),
-		HWRHmac:           os.Getenv(envHwrHmac),
-		HWRLangOverride:   os.Getenv(envHwrLangOverride),
-		HWRHost:           os.Getenv(envHwrHost),
+		AdminAPIToken:     os.Getenv(envAdminAPIToken),
 		HTTPSCookie:       httpsCookie,
 		TrustProxy:        trustProxy,
 		MQTTPort:          mqttPort,
@@ -377,27 +307,13 @@ General:
 	%s Send auth cookie only via https
 	%s	Trust the proxy for X-Forwarded-For/X-Real-IP (set only if behind a proxy)
 	%s	Hash tree schema version: "3" or "4" (default: 3)
+	%s	Bearer token for the headless admin API (unset disables /admin routes)
 
 MQTT (for screenshare):
 	%s	MQTT TCP port (default: 8883)
 	%s	ICE servers for WebRTC (JSON array format)
 			Example: [{"urls":["stun:stun.l.google.com:19302"]}]
 			With auth: [{"urls":["turn:server:port"],"username":"user","credential":"pass"}]
-
-Emails, smtp:
-	%s
-	%s
-	%s
-	%s	no tls/plaintext, for testing or something
-	%s	don't check the server certificate (not recommended)
-	%s	custom HELO (if your email server needs it)
-	%s	override the email's From:
-
-myScript hwr (needs a developer account):
-	%s
-	%s
-	%s      override the language specified in myScript requests
-	%s      custom myScript host URL (default: https://cloud.myscript.com)
 `,
 		envJWTSecretKey,
 		EnvStorageURL,
@@ -414,21 +330,9 @@ myScript hwr (needs a developer account):
 		envHTTPSCookie,
 		envTrustProxy,
 		envHashSchemaVersion,
+		envAdminAPIToken,
 
 		envMQTTPort,
 		envICEServers,
-
-		envSMTPServer,
-		envSMTPUsername,
-		envSMTPPassword,
-		envSMTPNoTLS,
-		envSMTPInsecureTLS,
-		envSMTPHelo,
-		envSMTPFrom,
-
-		envHwrApplicationKey,
-		envHwrHmac,
-		envHwrLangOverride,
-		envHwrHost,
 	)
 }

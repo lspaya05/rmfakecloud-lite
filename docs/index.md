@@ -1,42 +1,25 @@
 # Welcome
 
-rmfakecloud is a clone of the cloud sync the remarkable tablet is using, in case you want to sync/backup your files and have full control of the hosting/storage environment.
+rmfakecloud-lite is a **headless** clone of the cloud sync the reMarkable tablet uses, for
+people who want to sync/backup their files with full control of the hosting/storage
+environment. It has no web UI: accounts are managed with the CLI and administrative actions
+are driven through a JSON [Admin API](usage/admin-api.md).
 
 ## Features
 
-* File synchronization (compatible with revisions 1.0 and 1.5)
-* Integrations with external files sources (using webdav or with a dedicated directory on local file system, instead of Google Drive and Dropbox)
-* Send document by email
-* Handwriting recognition
-* Screen sharing
+* File synchronization (compatible with revisions 1.0 and 1.5+)
+* Device registration / pairing (all reMarkable devices)
+* Screen sharing (viewer signaling relayed through the admin API)
+* Calendar integration via an [ICS](usage/calendar.md) subscription
 * Passcode (PIN) reset approval (reMarkable 1 / reMarkable 2 only)
 
-It comes with a very basic web interface that let you:
+Administration is done through:
 
-* Register user
-* Connect to your account
-* Generate one time code for device registration
-* View synchronized files
-* Download PDF of the synchronized files
-* Upload new documents
+* the CLI (`setuser` / `listusers`) for accounts — see [User Profile](usage/userprofile.md)
+* the [Admin API](usage/admin-api.md) for pairing codes, passcode resets, calendar
+  integrations, and screen-share signaling
 
-Please note that this project is under development and there are many features that requires to tweak configuration files directly.
-
-## Wish List
-
-Here is a list of tasks that still need to be accomplished:
-
-- UI:
-    * specify folder on upload
-    * add/remove users
-    * move files around
-    * rename files
-    * realtime notifications
-    * document preview
-    * archive / restore documents
-    * share files between users
-    * refactoring
-    * sent emails history
-- add message broker
-- add db
-- add blob storage
+This lite edition removes the web UI, email/SMTP, handwriting recognition, storage
+integrations (Dropbox/WebDAV/FTP/local), messaging webhooks, and PDF export from upstream
+rmfakecloud. See [`CHANGES.md`](https://github.com/ddvk/rmfakecloud/blob/master/CHANGES.md)
+for details.

@@ -9,37 +9,21 @@ The configuration is made through environment variables.
 | `PORT`            | listening port number (default: 3000) |
 | `DATADIR`         | Set data/files directory (default: `data/` in current dir) |
 | `LOGLEVEL`        | Set the log verbosity. Default is **info**, set to **debug** for more logging or **warn**, **error** for less |
-| `RM_HTTPS_COOKIE` | For the UI, force cookies to be available only via https |
+| `RM_HTTPS_COOKIE` | Force auth cookies to be available only via https |
 | `RM_TRUST_PROXY`  | Trust the proxy for client ip addresses (X-Forwarded-For/X-Real-IP) default false |
 | `HASH_SCHEMA_VERSION` | Hash tree schema version: "3" or "4" (default: 3) |
 
-## Handwriting recognition
+## Admin API
 
-To use the handwriting recognition feature, you need first to create a free account on <https://developer.myscript.com/> (up to 2000 free recognitions per month).
+The lite edition has no web UI; administrative tasks (generating pairing codes, approving
+passcode resets, managing ICS calendar integrations, and screen-share viewer signaling) are
+exposed through a headless JSON API under `/admin`, protected by a static bearer token.
 
-Then you'll obtains an application key and its corresponding HMAC to give to rmfakecloud:
+| Variable name         | Description |
+|-----------------------|-------------|
+| `RM_ADMIN_API_TOKEN`  | Bearer token that enables the `/admin` endpoints. If unset, the admin API is **not** registered and a warning is logged at startup. |
 
-| Variable name              | Description |
-|----------------------------|-------------|
-| `RMAPI_HWR_APPLICATIONKEY` | Application key obtained from myscript |
-| `RMAPI_HWR_HMAC`           | HMAC obtained from myscript |
-| `RMAPI_HWR_LANG_OVERRIDE`  | Optional: Use this if you want your handwriting to be recognized as a different language. This variable accepts a locale code (e.g., zh_CN). Refer to [this page](https://app-support.myscript.com/support/solutions/articles/16000086001-supported-languages) for supported languages.|
-| `RMAPI_HWR_HOST`           | Optional: Custom myScript host URL (default: `https://cloud.myscript.com`). Supports http/https and custom ports. |
-
-## Email settings
-
-To be able to send email from your reMarkable, fill the following variables:
-
-| Variable name          | Description |
-|------------------------|-------------|
-| `RM_SMTP_SERVER`       | The SMTP server address in  host:port format |
-| `RM_SMTP_USERNAME`     | The username/email for login |
-| `RM_SMTP_PASSWORD`     | Plaintext password (application password should work) |
-| `RM_SMTP_FROM`         | Custom `From:` header for the mails (eg. `ReMarkable self-hosted <remarkable@my.example.net>`). If this override is set, the user's email address is instead put as `Reply-To` |
-| `RM_SMTP_HELO`         | Custom HELO, if your email provider needs it |
-| `RM_SMTP_NOTLS` | don't use tls |
-| `RM_SMTP_STARTTLS` | use starttls command, should be combined with NOTLS. in most cases port 587 should be used |
-| `RM_SMTP_INSECURE_TLS` | If set, don't check the server certificate (not recommended) |
+See [Admin API](../usage/admin-api.md) for the route table and `curl` examples.
 
 ## Screen sharing
 
@@ -49,7 +33,11 @@ Screen sharing streams your tablet display to a browser via WebRTC. There are tw
 
 Starting with OS 3.27, the tablet can use REST-based signaling instead of MQTT. No additional setup is required, screen sharing works out of the box.
 
-Start a screen share session from the sharing menu on your tablet, then open the **Screen Share** page in the rmfakecloud web UI. The page automatically finds the active session and connects.
+Start a screen share session from the sharing menu on your tablet. The server only relays
+the WebRTC signaling; the viewer is an external client that drives it through the
+[admin API screenshare endpoints](../usage/admin-api.md#screen-share-viewer-signaling)
+(video is peer-to-peer). The admin endpoints find the active session and exchange the
+offer/answer on the viewer's behalf.
 
 | Variable name     | Description |
 |-------------------|-------------|

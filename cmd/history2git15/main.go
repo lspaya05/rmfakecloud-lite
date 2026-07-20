@@ -13,7 +13,7 @@ import (
 	"github.com/ddvk/rmfakecloud/internal/config"
 	"github.com/ddvk/rmfakecloud/internal/storage/fs"
 	"github.com/ddvk/rmfakecloud/internal/storage/models"
-	"github.com/ddvk/rmfakecloud/internal/ui/viewmodel"
+	"github.com/ddvk/rmfakecloud/internal/viewmodel"
 )
 
 func writeEntries(fd *strings.Builder, entries []viewmodel.Entry, currentLevel int) {

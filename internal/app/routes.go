@@ -15,7 +15,6 @@ var kb uint64 = 2 << 10
 
 const (
 	integrationKey = "integrationid"
-	folderKey      = "folderid"
 	fileKey        = "file"
 )
 
@@ -114,35 +113,10 @@ func (app *App) registerRoutes(router *gin.Engine) {
 
 		authRoutes.GET("/document-storage/json/2/docs", app.listDocuments)
 
-		// send email
-		authRoutes.POST("/api/v2/document", app.sendEmail)
-		authRoutes.POST("/share/v1/email", app.sendEmail)
-		// hwr
-		authRoutes.POST("/api/v1/page", app.handleHwr)
-		authRoutes.POST("/convert/v1/handwriting", app.handleHwr)
-
-		// read on remarkable extension
-		authRoutes.POST("/doc/v1/files", app.uploadDoc)
-		// v2
-		authRoutes.POST("/doc/v2/files", app.uploadDocV2)
-		authRoutes.OPTIONS("/doc/v2/files", func(c *gin.Context) {
-			//TODO: seems to be a cors preflight
-			c.Status(http.StatusOK)
-		})
-
 		// integrations
-		authRoutes.GET("/integrations/v1/:"+integrationKey+"/folders/:"+folderKey, app.integrationsList)
-		authRoutes.GET("/integrations/v1/:"+integrationKey+"/files/:"+fileKey+"/metadata", app.integrationsGetMetadata)
-		authRoutes.GET("/integrations/v1/:"+integrationKey+"/files/:"+fileKey, app.integrationsGetFile)
-		authRoutes.POST("/integrations/v1/:"+integrationKey+"/files/:"+folderKey, app.integrationsUpload)
 		authRoutes.GET("/integrations/v1/", app.integrations)
 
 		authRoutes.GET("/integrations/v2/instances", app.integrations)
-		authRoutes.GET("/integrations/v2/storage/:"+integrationKey+"/folders/:"+folderKey, app.integrationsList)
-		authRoutes.GET("/integrations/v2/storage/:"+integrationKey+"/files/:"+fileKey, app.integrationsGetFile)
-		authRoutes.GET("/integrations/v2/storage/:"+integrationKey+"/files/:"+fileKey+"/metadata", app.integrationsGetMetadata)
-		authRoutes.POST("/integrations/v2/storage/:"+integrationKey+"/files/:"+folderKey, app.integrationsUpload)
-		authRoutes.POST("/integrations/v2/messaging/:"+integrationKey+"/message", app.integrationsSendMessage)
 		authRoutes.GET("/integrations/v2/calendars/:"+integrationKey+"/events", app.integrationsCalendarEvents)
 
 		// sync15
@@ -167,4 +141,7 @@ func (app *App) registerRoutes(router *gin.Engine) {
 		// reports
 		authRoutes.POST("/sync/reports/v1", app.syncReports)
 	}
+
+	// headless admin API (registered only when RM_ADMIN_API_TOKEN is set)
+	app.registerAdminRoutes(router)
 }

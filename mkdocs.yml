@@ -34,7 +34,8 @@ nav:
   - Desktop Setup: remarkable/desktop-client.md
   - Usage:
       - User Profile: usage/userprofile.md
-      - Integrations: usage/integrations.md
+      - Admin API: usage/admin-api.md
+      - Calendar (ICS): usage/calendar.md
       - Diff Sync: usage/diff-sync.md
       - Passcode Reset: usage/passcode-reset.md
-  - Browser Extension: browser-extension.md
+      - Storage Layout: usage/storage-layout.md

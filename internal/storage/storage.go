@@ -9,21 +9,11 @@ import (
 	"github.com/ddvk/rmfakecloud/internal/model"
 )
 
-// ExportOption type of export
-type ExportOption int
-
-const (
-	ExportWithAnnotations ExportOption = iota
-	ExportOnlyAnnotations
-	ExportPayload
-)
-
 // DocumentStorer stores documents
 type DocumentStorer interface {
 	StoreDocument(uid, docid string, s io.ReadCloser) error
 	RemoveDocument(uid, docid string) error
 	GetDocument(uid, docid string) (io.ReadCloser, error)
-	ExportDocument(uid, docid, outputType string, exportOption ExportOption) (io.ReadCloser, error)
 
 	GetStorageURL(uid, docid string) (string, time.Time, error)
 	CreateDocument(uid, name, parent string, stream io.Reader) (doc *Document, err error)

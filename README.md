@@ -1,6 +1,10 @@
-# rmfakecloud
+# rmfakecloud-lite
 
-This is a replacement of the cloud, in case you want to sync/backup your files and have full control of the hosting environment.
+A headless fork of [rmfakecloud](https://github.com/ddvk/rmfakecloud): a replacement of
+the reMarkable cloud for people who want to sync/backup their files with full control of
+the hosting environment. This "lite" edition drops the web UI and several peripheral
+features to keep the service small and easy to operate; everything an administrator needs
+is exposed through a CLI and a headless JSON API driven with `curl`.
 
 See the [project documentation](https://ddvk.github.io/rmfakecloud/) for setup and configuration.
 
@@ -19,29 +23,28 @@ The current release of rmfakecloud supports file synchronization up to **reMarka
 See the [documentation](https://ddvk.github.io/rmfakecloud/remarkable/setup/) for how to setup your device to use rmfakecloud.
 
 
-## Feature Parity With Official Cloud
+## Features
 
-| Features | Supported | Notes |
-| -------- | --------- | ----- |
+This lite edition keeps everything the tablet needs to sync and pair, plus a small set of
+admin capabilities. Features that are not core to headless sync have been removed.
+
+| Feature | Status | Notes |
+| ------- | ------ | ----- |
 | File synchronization (1.0) | ✅ |  |
-| File synchronization (1.5, 2, 3, 4) | ✅ |  |
-| [Send document by email](https://ddvk.github.io/rmfakecloud/install/configuration/#email-settings) | ✅ |  |
-| [Handwriting recognition](https://ddvk.github.io/rmfakecloud/install/configuration/#handwriting-recognition) | ✅ |  |
-| Handwriting search | ❌ |  |
-| [Screen sharing](https://ddvk.github.io/rmfakecloud/install/configuration/#screen-sharing) | ✅ |  |
-| [Storage integrations](https://ddvk.github.io/rmfakecloud/usage/integrations/) | ✅ |  |
-| Integration with Dropbox | 🟡 | [WIP](https://github.com/ddvk/rmfakecloud/blob/master/internal/integrations/dropbox.go) |
-| Integration with Google Drive | 🟡 | [WIP](https://github.com/ddvk/rmfakecloud/pull/241) |
-| Integration with OneDrive | ❌ |  |
-| Integration with WebDAV | ✅ | Nextcloud, Owncloud, ... |
-| Integration with FTP | ✅ |  |
-| Messaging integrations | ✅ |  |
-| [Messaging integration through webhook](https://ddvk.github.io/rmfakecloud/usage/integrations/#messaging-webhook) | ✅ |  |
-| Calendar integration | ✅ | ICS currently supported
-| Messaging integration to Slack | 🟡 | Not directly, use a webhook with zapier/make/n8n |
-| Archive document to cloud | 🟡 | It works but the information is not saved |
-| [Passcode (PIN) reset](https://ddvk.github.io/rmfakecloud/usage/passcode-reset/) | ✅ | reMarkable 1 / reMarkable 2 only |
-| Document rendering in web interface | ❌ | [WIP](https://github.com/ddvk/rmfakecloud/issues/255) |
+| File synchronization (1.5, 2, 3, 4) | ✅ | [diff sync](https://ddvk.github.io/rmfakecloud/usage/diff-sync/) |
+| Device registration / pairing | ✅ | all reMarkable devices; pairing code via the [admin API](https://ddvk.github.io/rmfakecloud/usage/admin-api/) |
+| [Screen sharing](https://ddvk.github.io/rmfakecloud/install/configuration/#screen-sharing) | ✅ | viewer signaling relayed through the admin API |
+| [Calendar integration (ICS)](https://ddvk.github.io/rmfakecloud/usage/calendar/) | ✅ | subscribe to an `.ics` URL |
+| [Passcode (PIN) reset](https://ddvk.github.io/rmfakecloud/usage/passcode-reset/) | ✅ | reMarkable 1 / reMarkable 2 only; approved via the admin API |
+| Web UI | ❌ | removed in the lite edition — use the CLI + [admin API](https://ddvk.github.io/rmfakecloud/usage/admin-api/) |
+| Send document by email / SMTP | ❌ | removed |
+| Handwriting recognition | ❌ | removed |
+| Storage integrations (Dropbox / WebDAV / FTP / local) | ❌ | removed |
+| Messaging integrations / webhooks | ❌ | removed |
+| Browser extension endpoints | ❌ | removed |
+
+See [`CHANGES.md`](CHANGES.md) for the full list of what was removed, kept, and relocated
+relative to upstream rmfakecloud.
 
 
 ## Breaking Changes
@@ -54,7 +57,9 @@ See the [documentation](https://ddvk.github.io/rmfakecloud/remarkable/setup/) fo
 
 ## Development
 
-run `./dev.sh` which should start the UI and backend
+Run `./dev.sh` which rebuilds and reruns the headless backend on any Go file change
+(requires [`entr`](https://github.com/eradman/entr)). Set `RM_ADMIN_API_TOKEN` to enable
+the admin API while developing.
 
 ### Caveats/ WARNING
 

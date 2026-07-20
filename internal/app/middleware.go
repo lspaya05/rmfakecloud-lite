@@ -55,12 +55,9 @@ func (app *App) authMiddleware() gin.HandlerFunc {
 }
 
 var dontLogBody = map[string]bool{
-	"/storage":                 true,
-	"/blobstorage":             true,
-	"/api/v2/document":         true,
-	"/ui/api/documents/upload": true,
-	"/v1/reports":              true,
-	"/doc/v1/files":            true,
+	"/storage":     true,
+	"/blobstorage": true,
+	"/v1/reports":  true,
 }
 
 func requestLoggerMiddleware() gin.HandlerFunc {
