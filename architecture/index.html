@@ -1,0 +1,1512 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Self hosted reMarkable sync cloud">
+      
+      
+        <meta name="author" content="lspaya05">
+      
+      
+        <link rel="canonical" href="https://lspaya05.github.io/rmfakecloud-lite/architecture/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../install/source/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Architecture - rmfakecloud</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="rmfakecloud" class="md-header__button md-logo" aria-label="rmfakecloud" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            rmfakecloud
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/lspaya05/rmfakecloud-lite" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="rmfakecloud" class="md-nav__button md-logo" aria-label="rmfakecloud" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    rmfakecloud
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/lspaya05/rmfakecloud-lite" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-boot-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Boot chain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-composition-root" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Composition root
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-three-route-groups-on-one-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Three route groups on one engine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-sync-10-15-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The sync 1.0 / 1.5 split
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-on-disk-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. On-disk layout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-feature-file-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Feature → file index
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Feature → file index">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#front-end-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Front end (ui/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-where-do-i-add-x" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Where do I add X
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#build-and-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build and run
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Setup
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Cloud Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    With Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/helm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    With Helm
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reverse Proxy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reverse Proxy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/reverse-proxy/apache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/reverse-proxy/nginx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/reverse-proxy/traefik/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traefik
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/fail2ban/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fail2ban
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/external-access/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    External access
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Device Setup
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Device Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remarkable/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Device
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remarkable/https/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remarkable/desktop-client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Desktop Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/userprofile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Profile
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/integrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/diff-sync/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diff Sync
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/passcode-reset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Passcode Reset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../browser-extension/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="architecture">Architecture</h1>
+<p>An orientation map of the codebase: where execution starts, how it is laid out, and
+which file owns which feature. Terse by design — every section is a diagram plus
+pointers.</p>
+<div class="admonition info">
+<p class="admonition-title">One binary, three audiences</p>
+<p>A single Go process serves the <strong>tablet</strong> (reMarkable sync/auth APIs), the <strong>browser</strong>
+(embedded React SPA), and <strong>blob transfer</strong> (signed-URL endpoints the other two point
+at). Storage is plain files on disk — there is no database.</p>
+</div>
+<h2 id="1-boot-chain">1. Boot chain</h2>
+<p>Entry point is <code>cmd/rmfakecloud/main.go</code> → <code>main()</code>.</p>
+<pre class="mermaid"><code>flowchart TD
+    M["main()&lt;br/&gt;cmd/rmfakecloud/main.go"] --&gt; L["configureLogging()&lt;br/&gt;logrus + optional file hook"]
+    L --&gt; C["config.FromEnv()&lt;br/&gt;internal/config/config.go"]
+    C --&gt; CLI{"cli.New(cfg).Handle(os.Args)&lt;br/&gt;setuser / listusers / rmuser?"}
+    CLI --&gt;|yes| X["run subcommand, exit&lt;br/&gt;internal/cli/managerusers.go"]
+    CLI --&gt;|no| V["cfg.Verify()"]
+    V --&gt; N["app.NewApp(cfg)&lt;br/&gt;internal/app/app.go"]
+    N --&gt; S["go a.Start()&lt;br/&gt;HTTP/HTTPS + optional MQTT listener"]
+    S --&gt; W["block on SIGINT / SIGTERM"]
+    W --&gt; ST["a.Stop() — 5s graceful shutdown"]</code></pre>
+<p>All configuration is environment variables. The <code>env*</code> consts in
+<code>internal/config/config.go</code> are the authoritative list; <code>--help</code> prints them via
+<code>config.EnvVars()</code>.</p>
+<h2 id="2-composition-root">2. Composition root</h2>
+<p><code>app.NewApp</code> (<code>internal/app/app.go</code>) builds everything and wires it together. The key
+move: <strong>one</strong> <code>fs.NewStorage(cfg)</code> value is handed out under four different interfaces
+(declared in <code>internal/storage/storage.go</code>).</p>
+<pre class="mermaid"><code>flowchart LR
+    FS["fs.NewStorage(cfg)&lt;br/&gt;internal/storage/fs"]
+    FS --&gt; I1["DocumentStorer"]
+    FS --&gt; I2["BlobStorage"]
+    FS --&gt; I3["MetadataStorer"]
+    FS --&gt; I4["UserStorer"]
+
+    subgraph SIB["built alongside"]
+      H["hub.NewHub — WS fan-out"]
+      P["passcodestore.NewInMemory"]
+      CC["NewCodeConnector — pairing codes"]
+      HW["hwr.HWRClient"]
+      RM["screenshare.NewRoomManager"]
+      MQ["mqtt.NewBroker"]
+    end
+
+    I1 --&gt; R
+    I2 --&gt; R
+    I3 --&gt; R
+    I4 --&gt; R
+    SIB --&gt; R["gin.Default() — one engine"]
+    R --&gt; RA["app.registerRoutes"]
+    R --&gt; RB["ui.New(...).RegisterRoutes"]
+    R --&gt; RC["fs.NewApp(...).RegisterRoutes"]</code></pre>
+<p>If no users exist on startup, <code>cfg.CreateFirstUser</code> is flipped on and the first login
+creates an admin.</p>
+<h2 id="3-three-route-groups-on-one-engine">3. Three route groups on one engine</h2>
+<p>Everything is mounted on the same <code>gin.Engine</code>, but the groups differ in <strong>how they
+authenticate</strong> — the fastest way to tell which world a handler belongs to.</p>
+<pre class="mermaid"><code>flowchart TD
+    T["reMarkable tablet"] --&gt;|JWT device/user token| A
+    B["browser SPA"] --&gt;|JWT cookie| U
+    T --&gt;|HMAC-signed URL| S
+    B --&gt;|HMAC-signed URL| S
+
+    A["Tablet API&lt;br/&gt;internal/app/routes.go&lt;br/&gt;handlers: internal/app/handlers.go"]
+    U["Web UI API&lt;br/&gt;internal/ui/routes.go&lt;br/&gt;handlers: internal/ui/handlers.go"]
+    S["Blob transfer&lt;br/&gt;internal/storage/fs/app.go"]
+
+    A -.hands out signed URLs.-&gt; S
+    U -.serves embedded SPA.-&gt; B</code></pre>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Registered in</th>
+<th>Auth</th>
+<th>Serves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tablet API</td>
+<td><code>internal/app/routes.go</code></td>
+<td><code>app.authMiddleware()</code> — JWT, <code>internal/app/middleware.go</code></td>
+<td><code>/token/json/2/*</code>, <code>/document-storage/json/2/*</code>, <code>/sync/v2</code> <code>v3</code> <code>v4/*</code>, <code>/api/v1/signed-urls/*</code>, <code>/integrations/v1</code> <code>v2/*</code>, HWR, email, screenshare, <code>/notifications/ws/json/1</code></td>
+</tr>
+<tr>
+<td>Blob transfer</td>
+<td><code>internal/storage/fs/app.go</code></td>
+<td>HMAC-signed token in the URL — <strong>not</strong> a JWT</td>
+<td><code>/storage/:token</code>, <code>/blobstorage</code></td>
+</tr>
+<tr>
+<td>Web UI</td>
+<td><code>internal/ui/routes.go</code></td>
+<td>cookie JWT (<code>WebUserClaims</code>) + <code>adminMiddleware()</code> on <code>/users*</code></td>
+<td><code>/ui/api/*</code>, static SPA at <code>/assets</code>, <code>NoRoute</code> → <code>index.html</code></td>
+</tr>
+</tbody>
+</table>
+<p>Unauthenticated odds and ends: <code>/health</code>, <code>/discovery/v1/endpoints</code>,
+<code>/discovery/v1/webapp</code>, <code>/service/json/1/:service</code>, <code>/favicon.ico</code>, <code>/robots.txt</code>, and the
+telemetry sinks (<code>/v1/reports</code>, <code>/v2/events</code>, … → <code>app.nullReport</code>).</p>
+<h2 id="4-the-sync-10-15-split">4. The sync 1.0 / 1.5 split</h2>
+<p>The one structural fact that makes the codebase feel doubled. Two sync protocols coexist
+and almost every document-touching path branches on which is in play.</p>
+<pre class="mermaid"><code>flowchart TD
+    TS["Tablet request: JWT scopes"] --&gt; TC{"sync:tortoise&lt;br/&gt;or sync:fox?"}
+    TC --&gt;|yes| T15["ctx SyncVersion = Sync15"]
+    TC --&gt;|no| T10["ctx SyncVersion = Sync10"]
+
+    WS["Web UI request: model.User.Sync15"] --&gt; WC{"flag true?"}
+    WC --&gt;|yes| W15["backends map -&gt; Sync15"]
+    WC --&gt;|no| W10["backends map -&gt; Sync10"]
+
+    T15 --&gt; B15["backend15&lt;br/&gt;internal/ui/backend15.go"]
+    W15 --&gt; B15
+    T10 --&gt; B10["backend10&lt;br/&gt;internal/ui/backend10.go"]
+    W10 --&gt; B10</code></pre>
+<p>Tablet side: <code>app.authMiddleware()</code> reads the JWT scopes and sets <code>SyncVersion</code> in the gin
+context (<code>internal/app/middleware.go</code>). Web side: <code>getBackend</code> (<code>internal/ui/handlers.go</code>)
+looks the user's flag up in the <code>backends</code> map built in <code>internal/ui/ui.go</code>.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>sync 1.0</th>
+<th>sync 1.5 ("sync15")</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit of transfer</td>
+<td>whole-document zip</td>
+<td>content-addressed blobs + hash tree</td>
+</tr>
+<tr>
+<td>Metadata</td>
+<td><code>.metadata</code> files</td>
+<td>entries inside the hash tree</td>
+</tr>
+<tr>
+<td>UI backend</td>
+<td><code>internal/ui/backend10.go</code></td>
+<td><code>internal/ui/backend15.go</code></td>
+</tr>
+<tr>
+<td>Storage</td>
+<td><code>internal/storage/fs/documents.go</code>, <code>metadata.go</code></td>
+<td><code>internal/storage/fs/blobstore.go</code></td>
+</tr>
+<tr>
+<td>Models</td>
+<td><code>messages.RawMetadata</code></td>
+<td><code>internal/storage/models/hashtree.go</code>, <code>hashdoc.go</code>, <code>hashentry.go</code></td>
+</tr>
+<tr>
+<td>Versioning</td>
+<td>document <code>Version</code> int</td>
+<td>root generation numbers in <code>.root.history</code></td>
+</tr>
+</tbody>
+</table>
+<p>Hash tree schema version 3 vs 4 is selectable with <code>HASH_SCHEMA_VERSION</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A feature that touches documents usually has to be implemented in <strong>both</strong> backends.
+Check the <code>backend</code> interface in <code>internal/ui/ui.go</code> — if your change fits there, both
+sides need it.</p>
+</div>
+<h2 id="5-on-disk-layout">5. On-disk layout</h2>
+<p>Rooted at <code>$DATADIR</code> (default <code>./data</code>).</p>
+<div class="highlight"><pre><span></span><code>data/
+└── users/
+    └── &lt;uid&gt;/
+        ├── .userprofile          user record + integrations  (fs/userstorage.go)
+        ├── &lt;docid&gt;.zip           sync 1.0 document
+        ├── &lt;docid&gt;.metadata      sync 1.0 metadata
+        └── sync/                 sync 1.5 only
+            ├── &lt;blob-hash&gt;       content-addressed blobs
+            ├── root              current root hash
+            ├── .root.history     generation log
+            └── .tree             cached hash tree  (fs/blobstore.go)
+</code></pre></div>
+<p>Every UID and file name goes through <code>common.Sanitize</code> / <code>common.SanitizeUid</code>
+(<code>internal/common/common.go</code>) before touching the filesystem. Keep doing that for any new
+path construction.</p>
+<h2 id="6-feature-file-index">6. Feature → file index</h2>
+<h3 id="backend">Backend</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Lives in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Device registration, token issue/renew</td>
+<td><code>internal/app/handlers.go</code> (<code>newDevice</code>, <code>newUserToken</code>, <code>deleteDevice</code>); claim shapes in <code>internal/app/claims.go</code> and <code>internal/messages/auth0.go</code></td>
+</tr>
+<tr>
+<td>Device pairing code</td>
+<td><code>internal/app/codeconnector.go</code></td>
+</tr>
+<tr>
+<td>Passcode (PIN) reset flow</td>
+<td><code>internal/app/passcode.go</code>, <code>internal/app/passcodestore/</code>, UI half in <code>internal/ui/passcode.go</code></td>
+</tr>
+<tr>
+<td>Sync 1.0 document CRUD</td>
+<td><code>internal/app/handlers.go</code> (<code>listDocuments</code>, <code>uploadRequest</code>, <code>updateStatus</code>, <code>deleteDocument</code>), <code>internal/storage/fs/documents.go</code></td>
+</tr>
+<tr>
+<td>Sync 1.5 blobs, roots, signed URLs</td>
+<td><code>internal/app/handlers.go</code> (<code>blobStorage*</code>, <code>syncGetRootV3</code>/<code>V4</code>, <code>syncUpdateRootV3</code>, <code>checkFilesPresence</code>), <code>internal/storage/fs/blobstore.go</code>, <code>internal/storage/models/</code></td>
+</tr>
+<tr>
+<td>Notifications (WebSocket fan-out)</td>
+<td><code>internal/app/hub/hub.go</code></td>
+</tr>
+<tr>
+<td>MQTT (newer firmware transport)</td>
+<td><code>internal/mqtt/broker.go</code>; WS bridge at <code>app.handleMQTTWebSocket</code></td>
+</tr>
+<tr>
+<td>Screenshare / WebRTC signalling</td>
+<td><code>internal/screenshare/rooms.go</code>; handlers in both <code>internal/app/handlers.go</code> and <code>internal/ui/handlers.go</code>; ICE servers via <code>ICE_SERVERS</code></td>
+</tr>
+<tr>
+<td>Send-by-email</td>
+<td><code>app.sendEmail</code> in <code>internal/app/handlers.go</code>, SMTP in <code>internal/email/smtp.go</code></td>
+</tr>
+<tr>
+<td>Handwriting recognition (MyScript proxy)</td>
+<td><code>internal/hwr/client.go</code></td>
+</tr>
+<tr>
+<td>Integrations (localfs, ftp, webdav, dropbox, ics, webhook)</td>
+<td><code>internal/integrations/</code> — interfaces in <code>integrations.go</code>, one file per provider; per-user config lives in the user profile</td>
+</tr>
+<tr>
+<td>PDF render / annotation export</td>
+<td><code>internal/storage/exporter/pdf.go</code> (unipdf + rmapi). <code>license.go</code> uses <code>go:linkname</code> to inject the community licence key — <strong>do not "clean it up"</strong></td>
+</tr>
+<tr>
+<td>User management from the shell</td>
+<td><code>internal/cli/managerusers.go</code> (<code>setuser</code>, <code>listusers</code>, <code>rmuser</code>)</td>
+</tr>
+<tr>
+<td>Config / env vars</td>
+<td><code>internal/config/config.go</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="front-end-ui">Front end (<code>ui/</code>)</h3>
+<p>Vite + React 18, react-router v5, react-bootstrap. Built to <code>ui/dist</code> and embedded into
+the binary by <code>ui/assets.go</code> (<code>//go:embed dist/*</code>).</p>
+<pre class="mermaid"><code>flowchart TD
+    IX["ui/src/index.jsx"] --&gt; AP["App.jsx — Router + AuthProvider"]
+    AP --&gt; PR["PrivateRoute&lt;br/&gt;components/PrivateRoute.tsx"]
+    PR --&gt; PG
+    subgraph PG["ui/src/pages/"]
+      P1["Home — /"]
+      P2["Documents — /documents/:itemId?"]
+      P3["Connect — /connect, /pair"]
+      P4["Integrations — /integrations"]
+      P5["Profile — /profile"]
+      P6["ScreenShare — /screenshare"]
+      P7["Admin — /admin (Role.Admin only)"]
+    end
+    AP --&gt; LG["Login — /login"]
+    PG --&gt; API["services/api.service.js&lt;br/&gt;every /ui/api call"]
+    AP --&gt; AC["common/useAuthContext.jsx&lt;br/&gt;auth state"]</code></pre>
+<h2 id="7-where-do-i-add-x">7. Where do I add X</h2>
+<p><strong>A new tablet endpoint</strong> — route inside the <code>authRoutes</code> group in
+<code>internal/app/routes.go</code>, handler in <code>internal/app/handlers.go</code>. Read the user with
+<code>userID(c)</code> and the protocol with <code>getSyncVersion(c)</code>.</p>
+<p><strong>A new web UI endpoint</strong> — route in <code>internal/ui/routes.go</code> (under <code>auth</code>, or under
+<code>admin</code> if it is admin-only), handler in <code>internal/ui/handlers.go</code>. If it touches
+documents, go through <code>app.getBackend(c)</code> so both sync versions work — which means adding
+the method to the <code>backend</code> interface in <code>internal/ui/ui.go</code> and implementing it in both
+<code>backend10.go</code> and <code>backend15.go</code>.</p>
+<p><strong>A new env var</strong> — add an <code>env*</code> const, parse it in <code>FromEnv</code>, add a line to <code>EnvVars()</code>
+so <code>--help</code> stays accurate (all in <code>internal/config/config.go</code>), then document it in
+<a href="../install/configuration/">Configuration</a>.</p>
+<p><strong>A new integration provider</strong> — implement <code>StorageIntegrationProvider</code> (and/or the
+messaging/calendar interfaces) in a new file under <code>internal/integrations/</code>, then add the
+provider constant and the <code>case</code> arms in <code>integrations.go</code>.</p>
+<p><strong>A new upload-style endpoint</strong> — add its path to <code>dontLogBody</code> in
+<code>internal/app/middleware.go</code>, otherwise trace-level logging dumps file bytes into the log.</p>
+<p><strong>Anything writing to disk</strong> — build the path with <code>common.Sanitize*</code>.</p>
+<h2 id="build-and-run">Build and run</h2>
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>build<span class="w">      </span><span class="c1"># pnpm build -&gt; ui/dist, then go build -&gt; dist/rmfakecloud-x64</span>
+make<span class="w"> </span>run<span class="w">        </span><span class="c1"># go run ./cmd/rmfakecloud   (args via ARG=)</span>
+make<span class="w"> </span>runui<span class="w">      </span><span class="c1"># vite dev server on :3001, proxies /ui/api -&gt; :3000</span>
+make<span class="w"> </span>testgo<span class="w">     </span><span class="c1"># go test ./...</span>
+./dev.sh<span class="w">        </span><span class="c1"># backend + UI watch loop (needs entr)</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">The <code>ui/dist</code> gotcha</p>
+<p><code>ui/assets.go</code> does <code>//go:embed dist/*</code>, so a bare <code>go build</code> or <code>go test</code> fails unless
+<code>ui/dist</code> exists. Run <code>make build</code> once, or drop a placeholder file into <code>ui/dist</code>,
+before invoking <code>go</code> directly.</p>
+</div>
+<p>Single Go test: <code>go test ./internal/storage/fs/ -run TestName -v</code>.
+UI lint: <code>cd ui &amp;&amp; pnpm lint</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["toc.integrate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
