@@ -5,8 +5,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
 	"github.com/gin-gonic/gin"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -3,10 +3,10 @@ package ui
 import (
 	"io"
 
-	"github.com/ddvk/rmfakecloud/internal/app/hub"
-	"github.com/ddvk/rmfakecloud/internal/storage"
-	"github.com/ddvk/rmfakecloud/internal/ui/viewmodel"
 	"github.com/google/uuid"
+	"github.com/lspaya05/rmfakecloud-lite/internal/app/hub"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage"
+	"github.com/lspaya05/rmfakecloud-lite/internal/ui/viewmodel"
 )
 
 type backend15 struct {

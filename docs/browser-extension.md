@@ -1,6 +1,6 @@
 # Browser Extension Support
 
-As of commit [a62153e](https://github.com/ddvk/rmfakecloud/commit/a62153ef5c09145bbbf63079ccb7e77ed2024fbd),
+As of commit [a62153e](https://github.com/lspaya05/rmfakecloud-lite/commit/a62153ef5c09145bbbf63079ccb7e77ed2024fbd),
 the [Read on reMarkable](https://support.remarkable.com/hc/en-us/articles/360006830977-Read-on-reMarkable-Google-Chrome-Extension?preview%5Btheme_id%5D=210292689&preview_as_role=anonymous#)
 Chrome extension is supported by rmfakecloud. Of course, the extension needs to be modified to connect to your cloud.
 

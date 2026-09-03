@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: ddvk/rmfakecloud
+  repository: ghcr.io/lspaya05/rmfakecloud-lite
   pullPolicy: Always
   tag: "latest"
 
@@ -11,7 +11,7 @@ rmfakecloud:
   # To use the handwriting recognition feature, you need first to create a free account on https://developer.myscript.com/ (up to 2000 free recognitions per month).
   rmapi_hwr_applicationkey: 
   rmapi_hwr_hmac: 
-  # See more here: https://ddvk.github.io/rmfakecloud/install/configuration/
+  # See more here: https://lspaya05.github.io/rmfakecloud-lite/install/configuration/
   rm_smtp_from: 
   rm_smtp_insecure_tls: 
   rm_smtp_password:

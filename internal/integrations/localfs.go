@@ -7,8 +7,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/ddvk/rmfakecloud/internal/messages"
-	"github.com/ddvk/rmfakecloud/internal/model"
+	"github.com/lspaya05/rmfakecloud-lite/internal/messages"
+	"github.com/lspaya05/rmfakecloud-lite/internal/model"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -64,7 +64,7 @@ func (d *localFS) List(folder string, depth int) (*messages.IntegrationFolder, e
 
 	startPath := path.Clean(folder)
 
-	log.Infof("[localfs] query for '%s' depth %d: ", startPath,  depth)
+	log.Infof("[localfs] query for '%s' depth %d: ", startPath, depth)
 
 	err := visitDir(d.rootPath, startPath, depth, response, func(s string) ([]fs.FileInfo, error) {
 		di, err := os.ReadDir(s)

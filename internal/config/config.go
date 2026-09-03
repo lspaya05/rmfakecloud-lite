@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/ddvk/rmfakecloud/internal/email"
+	"github.com/lspaya05/rmfakecloud-lite/internal/email"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/pbkdf2"
 )
@@ -85,8 +85,8 @@ const (
 
 // Config config
 type Config struct {
-	Port              string
-	StorageURL        string
+	Port       string
+	StorageURL string
 	//only https
 	CloudHost         string
 	DataDir           string

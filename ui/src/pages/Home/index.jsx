@@ -14,7 +14,7 @@ const Home = () => {
         </p>
         <p>
           It's is still a work in progress being, actively maintained over
-          on <a href="https://github.com/ddvk/rmfakecloud">GitHub</a>.
+          on <a href="https://github.com/lspaya05/rmfakecloud-lite">GitHub</a>.
         </p>
         <h2>Tips</h2>
         <ul>
@@ -35,13 +35,13 @@ const Home = () => {
           </li>
           <li>
             <p>
-              Check out the online <a href="https://ddvk.github.io/rmfakecloud/">documentation</a> to
+              Check out the online <a href="https://lspaya05.github.io/rmfakecloud-lite/">documentation</a> to
               learn more about the configuration options. Also read the README
             </p>
           </li>
           <li>
             <p>
-              You should also read the <a href="https://github.com/ddvk/rmfakecloud/blob/master/README.md">README</a>,
+              You should also read the <a href="https://github.com/lspaya05/rmfakecloud-lite/blob/master/README.md">README</a>,
               to see the current status of the project and notes from the developers.
             </p>
           </li>

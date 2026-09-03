@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
 )
 
 // MetadataFile content

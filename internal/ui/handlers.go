@@ -7,15 +7,15 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
-	"github.com/ddvk/rmfakecloud/internal/integrations"
-	"github.com/ddvk/rmfakecloud/internal/model"
-	"github.com/ddvk/rmfakecloud/internal/storage"
-	"github.com/ddvk/rmfakecloud/internal/storage/models"
-	"github.com/ddvk/rmfakecloud/internal/ui/viewmodel"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/integrations"
+	"github.com/lspaya05/rmfakecloud-lite/internal/model"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/models"
+	"github.com/lspaya05/rmfakecloud-lite/internal/ui/viewmodel"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 )
@@ -893,4 +893,3 @@ func (app *ReactAppWrapper) screenshareDeleteRoom(c *gin.Context) {
 	app.roomManager.DeleteAllForUser(uid)
 	c.Status(http.StatusNoContent)
 }
-

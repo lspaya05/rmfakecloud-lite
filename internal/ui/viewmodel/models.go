@@ -4,8 +4,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
-	"github.com/ddvk/rmfakecloud/internal/storage/models"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -35,8 +35,9 @@ type ChangeEmailForm struct {
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
+
 func NewErrorResponse(errormsg string) ErrorResponse {
-	return ErrorResponse {
+	return ErrorResponse{
 		Error: errormsg,
 	}
 }
@@ -216,7 +217,7 @@ type User struct {
 	Email        string `json:"email"`
 	Name         string `json:"name"`
 	NewPassword  string `json:"newpassword,omitempty"`
-	IsAdmin 	 bool `json:"isAdmin"`
+	IsAdmin      bool   `json:"isAdmin"`
 	CreatedAt    time.Time
 	Integrations []string `json:"integrations,omitempty"`
 }

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ddvk/rmfakecloud/internal/model"
+	"github.com/lspaya05/rmfakecloud-lite/internal/model"
 	"github.com/sirupsen/logrus"
 )
 

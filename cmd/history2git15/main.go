@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/config"
-	"github.com/ddvk/rmfakecloud/internal/storage/fs"
-	"github.com/ddvk/rmfakecloud/internal/storage/models"
-	"github.com/ddvk/rmfakecloud/internal/ui/viewmodel"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/fs"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/models"
+	"github.com/lspaya05/rmfakecloud-lite/internal/ui/viewmodel"
 )
 
 func writeEntries(fd *strings.Builder, entries []viewmodel.Entry, currentLevel int) {

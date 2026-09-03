@@ -10,7 +10,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/ddvk/rmfakecloud/internal/config"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
 )
 
 const (

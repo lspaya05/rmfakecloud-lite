@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/ddvk/rmfakecloud/internal/messages"
 	"github.com/gin-gonic/gin"
+	"github.com/lspaya05/rmfakecloud-lite/internal/messages"
 	log "github.com/sirupsen/logrus"
 )
 

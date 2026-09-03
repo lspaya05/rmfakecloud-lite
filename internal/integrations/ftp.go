@@ -7,8 +7,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/ddvk/rmfakecloud/internal/messages"
-	"github.com/ddvk/rmfakecloud/internal/model"
+	"github.com/lspaya05/rmfakecloud-lite/internal/messages"
+	"github.com/lspaya05/rmfakecloud-lite/internal/model"
 	"github.com/secsy/goftp"
 	"github.com/sirupsen/logrus"
 )

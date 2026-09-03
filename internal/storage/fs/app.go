@@ -12,9 +12,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/common"
-	"github.com/ddvk/rmfakecloud/internal/config"
 	"github.com/gin-gonic/gin"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
 	log "github.com/sirupsen/logrus"
 )
 

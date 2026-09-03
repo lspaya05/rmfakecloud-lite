@@ -14,12 +14,12 @@ import (
 	"time"
 
 	"github.com/danjacques/gofslock/fslock"
-	"github.com/ddvk/rmfakecloud/internal/common"
-	"github.com/ddvk/rmfakecloud/internal/config"
-	"github.com/ddvk/rmfakecloud/internal/storage"
-	"github.com/ddvk/rmfakecloud/internal/storage/exporter"
-	"github.com/ddvk/rmfakecloud/internal/storage/models"
 	"github.com/google/uuid"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/exporter"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/models"
 	log "github.com/sirupsen/logrus"
 )
 

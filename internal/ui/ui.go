@@ -7,17 +7,17 @@ import (
 	"path"
 	"time"
 
-	"github.com/ddvk/rmfakecloud/internal/app/hub"
-	"github.com/ddvk/rmfakecloud/internal/app/passcodestore"
-	"github.com/ddvk/rmfakecloud/internal/common"
-	"github.com/ddvk/rmfakecloud/internal/config"
-	"github.com/ddvk/rmfakecloud/internal/messages"
-	"github.com/ddvk/rmfakecloud/internal/screenshare"
-	"github.com/ddvk/rmfakecloud/internal/storage"
-	"github.com/ddvk/rmfakecloud/internal/storage/models"
-	"github.com/ddvk/rmfakecloud/internal/ui/viewmodel"
-	webui "github.com/ddvk/rmfakecloud/ui"
 	"github.com/gin-gonic/gin"
+	"github.com/lspaya05/rmfakecloud-lite/internal/app/hub"
+	"github.com/lspaya05/rmfakecloud-lite/internal/app/passcodestore"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
+	"github.com/lspaya05/rmfakecloud-lite/internal/messages"
+	"github.com/lspaya05/rmfakecloud-lite/internal/screenshare"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/models"
+	"github.com/lspaya05/rmfakecloud-lite/internal/ui/viewmodel"
+	webui "github.com/lspaya05/rmfakecloud-lite/ui"
 )
 
 type backend interface {

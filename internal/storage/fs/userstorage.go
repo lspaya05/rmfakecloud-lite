@@ -6,8 +6,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/ddvk/rmfakecloud/internal/config"
-	"github.com/ddvk/rmfakecloud/internal/model"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
+	"github.com/lspaya05/rmfakecloud-lite/internal/model"
 	log "github.com/sirupsen/logrus"
 )
 

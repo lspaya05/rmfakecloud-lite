@@ -10,17 +10,17 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ddvk/rmfakecloud/internal/app/hub"
-	"github.com/ddvk/rmfakecloud/internal/app/passcodestore"
-	"github.com/ddvk/rmfakecloud/internal/common"
-	"github.com/ddvk/rmfakecloud/internal/config"
-	"github.com/ddvk/rmfakecloud/internal/hwr"
-	"github.com/ddvk/rmfakecloud/internal/mqtt"
-	"github.com/ddvk/rmfakecloud/internal/screenshare"
-	"github.com/ddvk/rmfakecloud/internal/storage"
+	"github.com/lspaya05/rmfakecloud-lite/internal/app/hub"
+	"github.com/lspaya05/rmfakecloud-lite/internal/app/passcodestore"
+	"github.com/lspaya05/rmfakecloud-lite/internal/common"
+	"github.com/lspaya05/rmfakecloud-lite/internal/config"
+	"github.com/lspaya05/rmfakecloud-lite/internal/hwr"
+	"github.com/lspaya05/rmfakecloud-lite/internal/mqtt"
+	"github.com/lspaya05/rmfakecloud-lite/internal/screenshare"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage"
 
-	"github.com/ddvk/rmfakecloud/internal/storage/fs"
-	"github.com/ddvk/rmfakecloud/internal/ui"
+	"github.com/lspaya05/rmfakecloud-lite/internal/storage/fs"
+	"github.com/lspaya05/rmfakecloud-lite/internal/ui"
 
 	"github.com/gin-gonic/gin"
 )
@@ -115,7 +115,6 @@ func (app *App) Stop() {
 		log.Fatal("Server Shutdown:", err)
 	}
 }
-
 
 // NewApp constructs an app
 func NewApp(cfg *config.Config) App {
