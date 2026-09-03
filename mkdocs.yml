@@ -14,9 +14,15 @@ theme:
 
 markdown_extensions:
   - admonition
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
 nav:
   - Home: index.md
+  - Architecture: architecture.md
   - Cloud Setup:
       - From Source: install/source.md
       - With Docker: install/docker.md
